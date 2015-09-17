@@ -1,0 +1,19 @@
+{
+    "name": "alaindessi/adweb",
+    "description": "Buscobon PHP components",
+    "authors": [
+        {
+            "name": "Alain Dessi",
+            "email": "alain.dessi@laposte.net"
+        }
+    ],
+     "autoload": {
+        "psr-4":  { "Core\\": "/", "":"Facades/"}
+    },
+    "require": {
+        "php": ">=5.5.0",
+        "phpmailer/phpmailer": "^5.2",
+        "philo/laravel-blade": "^3.0",
+        "phpunit/phpunit": "^4.8"
+    }
+}
