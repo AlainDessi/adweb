@@ -10,7 +10,7 @@
         }
     ],
      "autoload": {
-        "psr-4":  { "Core\\": "/", "":"Facades/"}
+        "psr-4":  { "Core\\": "", "":"Facades/"}
     },
     "require": {
         "php": ">=5.5.0",

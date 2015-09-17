@@ -71,7 +71,10 @@ class HtmlBootstrapForm extends Html
   {
     $this->BootstrapFormGroup();
 
-    $this->label($label,$name);
+    if(!is_null($label))
+    {
+        $this->label($label,$name);
+    }
 
     $this->setAttribute('type',$type);
     $this->setAttribute('name',$name);
@@ -88,6 +91,18 @@ class HtmlBootstrapForm extends Html
   {
     $this->input($label,$name,'text');
     return $this;
+  }
+
+  /**
+   * Input type Hidden
+   *
+   * @param  string $name
+   * @return instance
+   */
+  public function hidden($name)
+  {
+      $this->input(null,$name,'hidden');
+      return $this;
   }
 
   public function password($label,$name)
