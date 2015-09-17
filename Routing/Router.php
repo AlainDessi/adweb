@@ -1,27 +1,39 @@
 <?php
+/**
+ * Routeur de l'application
+ * Merci à GrafikArt !
+ *
+ * MySQL verion 5.5.43
+ * PHP version 5.6.10
+ *
+ * @package     adweb/Buscobon MyFrameWork
+ * @author      DESSI Alain <contact@alain-dessi.com>
+ * @copyright   2015 Dessi Alain
+ * @link        http://www.alain-dessi.com
+ */
 
 namespace Core\Routing;
 
 class Router
 {
 
-	/**
-	 * router url
-	 * @var string
-	 */
-	private $url;
+  /**
+   * router url
+   * @var string
+   */
+  private $url;
 
-	/**
-	 * router url method
-	 * @var string
-	 */
-	private $url_method;
+  /**
+   * router url method
+   * @var string
+   */
+  private $url_method;
 
-	/**
-	 * routes array
-	 * @var array
-	 */
-	private $routes = [];
+  /**
+   * routes array
+   * @var array
+   */
+  private $routes = [];
 
   /**
    * Lite des Alias
@@ -42,10 +54,8 @@ class Router
 
   /**
    * Constructeur
-   *
-   * @param [type] $url [description]
    */
-	public function __construct( $url = null )
+  public function __construct()
   {
       if(!empty($_GET['url']))
       {
@@ -56,43 +66,43 @@ class Router
           $url = '';
       }
 
-  		if ( !empty( $url) || !is_null( $url ) )
+      if ( !empty( $url) || !is_null( $url ) )
       {
-    			$this->url = $url;
+          $this->url = $url;
           if(isset($_SERVER['REQUEST_METHOD']))
           {
               $this->url_method = $_SERVER['REQUEST_METHOD'];
           }
-  		}
-  		else
+      }
+      else
       {
-  			 return false;
-  		}
-	} // end __construct
+         return false;
+      }
+  }
 
-	public function get( $path, $callable, $alias = null )
+  public function get( $path, $callable, $alias = null )
   {
       return $this->addRoute( $path, $callable, $alias, 'GET' );
-	}
+  }
 
   /**
    * Création d'une route en post
    *
-   * @param  [type] $path     [description]
-   * @param  [type] $callable [description]
-   * @param  [type] $alias    [description]
-   * @return [type]           [description]
+   * @param  string $path     [description]
+   * @param  string $callable [description]
+   * @param  string $alias    [description]
+   * @return object route
    */
-	public function post( $path, $callable, $alias = null )
+  public function post( $path, $callable, $alias = null )
   {
       return $this->addRoute( $path, $callable, $alias, 'POST' );
-	}
+  }
 
   /**
    * Création automatique des routes d'un controller par default
-   * @param  [type] $path      [description]
-   * @param  [type] $callclass [description]
-   * @return [type]            [description]
+   *
+   * @param  string $path
+   * @param  string $callclass
    */
   public function resource( $path, $callclass )
   {
@@ -124,107 +134,102 @@ class Router
   /**
    * Fonction d'ajout d'une route
    *
-   * @param [type] $path     [description]
-   * @param [type] $callable [description]
-   * @param [type] $alias    [description]
-   * @param [type] $type     [description]
+   * @param string $path
+   * @param string $callable
+   * @param string $alias
+   * @param string $type
    */
   private function addRoute( $path, $callable, $alias, $type )
   {
+      if (is_null($alias))
+      {
+          $alias = preg_replace('#/:[a-z]+#', '', $path);
+          $alias = substr($alias,1);
+          $alias = implode( '.', explode( '/', $alias ) );
+      }
 
-    if (is_null($alias)) {
+      $route = new Route( $path, $callable, $alias );
+      $this->routes[$type][] = $route;
 
-      $alias = preg_replace('#/:[a-z]+#', '', $path);
-      $alias = substr($alias,1);
-      $alias = implode( '.', explode( '/', $alias ) );
+      $this->routesAlias[$alias] = $route;
 
-    }
-
-    $route = new Route( $path, $callable, $alias );
-    $this->routes[$type][] = $route;
-
-    $this->routesAlias[$alias] = $route;
-
-    return $route;
-
+      return $route;
   }
 
   /**
-   * Démarrare le routeur
-   * @return [type] [description]
+   * Vérifie les routes / url
    */
-	public function run() {
-    try {
-      if ( !isset( $this->routes[ $this->url_method ] ) ) {
-        throw new RouterException('REQUEST METHOD not exist');
+  public function run()
+  {
+      try {
+        if ( !isset( $this->routes[ $this->url_method ] ) ) {
+          throw new RouterException('REQUEST METHOD not exist');
+        }
+
+        // recherche de la route
+        foreach ($this->routes[ $this->url_method ] as $route ) {
+          if ( $route->match( $this->url ) ) {
+            return $route->call();
+          }
+        }
+
+        // pas de route trouvé
+        throw new RouterException('Aucune routes ne correspond à cette URL', '404');
       }
 
-      // recherche de la route
-  		foreach ($this->routes[ $this->url_method ] as $route ) {
-  			if ( $route->match( $this->url ) ) {
-  				return $route->call();
-  			}
-  		}
-
-      // pas de route trouvé
-      throw new RouterException('Aucune routes ne correspond à cette URL', '404');
-    }
-
-    catch(RouterException $e)
-    {
-      if(\Core\Config::get('dev')) {
-        ExeptionError($e);
+      catch(RouterException $e)
+      {
+        if(\Core\Config::get('dev')) {
+          ExeptionError($e);
+        }
+        else {
+          HttpError('404');
+        }
       }
-      else {
-        HttpError('404');
-      }
-    }
-
-	}
+  }
 
   /**
    * Return value of routes
+   *
    * @return array
    */
   public function getRoutes()
   {
-    return $this->routes;
+      return $this->routes;
   }
 
   /**
    * Renvoi la route par rapport à son alias
    *
-   * @param  [type] $alias [description]
-   * @return [type]        [description]
+   * @param  string $alias
+   * @return object route
    */
   public function getRouteAlias($alias)
   {
-
-    if(isset($this->routesAlias[$alias])) {
-      return $this->routesAlias[$alias];
-    }
-    else {
-      return false;
-    }
-
+      if(isset($this->routesAlias[$alias])) {
+        return $this->routesAlias[$alias];
+      }
+      else {
+        return false;
+      }
   }
 
   /**
    * Renvoi l'url d'un Alias
    *
-   * @param  [type] $alias [description]
-   * @return [type]        [description]
+   * @param  string $alias
+   * @return string
    */
   public function getUrlAlias( $alias )
   {
-    $route = $this->getRouteAlias($alias);
-    if($route) {
-      $path = $route->getPath();
-      return preg_replace('#/:[a-z]+#', '', $path);
-    }
-    else {
-      return 'no routes defined';
-    }
+      $route = $this->getRouteAlias($alias);
+      if($route) {
+        $path = $route->getPath();
+        return preg_replace('#/:[a-z]+#', '', $path);
+      }
+      else {
+        return 'no routes defined';
+      }
   }
 
-} // end class
+} // End class
