@@ -1,6 +1,8 @@
 {
     "name": "alaindessi/adweb",
+    "type": "library",
     "description": "Buscobon PHP components",
+    "license": "MIT",
     "authors": [
         {
             "name": "Alain Dessi",
