@@ -49,4 +49,15 @@ class Model
       return strtolower(str_replace('App\Model\\', '', get_called_class()));
   }
 
+  /**
+   * retourne le nombre d'enregistrement d'une table
+   *
+   * @return int
+   */
+    public static function count()
+    {
+        $count = self::select(['COUNT(*) as nbrec'])->first();
+        return $count->nbrec;
+    }
+
 } // end of class
