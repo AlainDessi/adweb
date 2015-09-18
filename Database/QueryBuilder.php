@@ -51,15 +51,25 @@ class QueryBuilder
   private $fillable;
 
   /**
+   * Champs à slugifier
+   * @var array
+   */
+  private $slugs=array();
+
+  /**
    * __construct
    *
    * @param array $fillable
    */
   public function __construct($fillable = array())
   {
-      $this->fillable = $fillable;
+        $this->fillable = $fillable;
   }
 
+  public function setFieldstoSlugifier($slugs=array())
+  {
+      $this->slugs = $slugs;
+  }
 
   /**
    * Methode magique
@@ -281,19 +291,17 @@ class QueryBuilder
   /**
    * Insertion d'une ligne dans une table
    *
-   * @param  array $data
+   * @param  array $fields
    */
-  public function insert( $data )
+  public function insert($fields)
   {
       // Ajout automatique de la date de modification
-      $data['created_at'] = date('Y-m-d H:i:s');
-      // verification des champs modifiable
-      foreach ($data as $key => $value) {
-        if( !in_array($key,$this->fillable) ) {
-          unset($data[$key]);
-        }
-      }
-      return Config::GetDb()->db_insert( $this->table, $data );
+      $fields['created_at'] = date('Y-m-d H:i:s');
+
+      // traitements des champs
+      $fields = $this->getFillandSlug($fields);
+
+      return Config::GetDb()->db_insert( $this->table, $fields );
   }
 
 /**
@@ -307,14 +315,9 @@ class QueryBuilder
     {
       // Ajout automatique de la date de modification
       $fields['modified_at'] = date('Y-m-d H:i:s');
-      // verification des champs modifiable
-      foreach ($fields as $key => $value)
-      {
-          if( !in_array($key,$this->fillable) )
-          {
-              unset($fields[$key]);
-          }
-      }
+
+      // traitements des champs
+      $fields = $this->getFillandSlug($fields);
 
       if(!empty($fields))
       {
@@ -334,7 +337,11 @@ class QueryBuilder
       }
   }
 
-
+  /**
+   * Effacement d'une ligne de table
+   *
+   * @param  mixed(array or int) $id
+   */
   public function delete($id)
   {
       if(is_array($id)) {
@@ -343,6 +350,38 @@ class QueryBuilder
       else {
        return Config::GetDb()->db_delete( $this->table, '', ['id' => $id] );
       }
+  }
+
+  /**
+   * Vérification des champs modifiable et
+   * Slugification des champs à slugifier
+   *
+   * @param  array $fields
+   * @return array
+   */
+  private function getFillandSlug($fields)
+  {
+      // verification des champs modifiable
+      foreach ($fields as $key => $value)
+      {
+          // unset not fillable
+          if(!in_array($key,$this->fillable) )
+          {
+              unset($fields[$key]);
+          }
+
+          // slug
+          if(in_array($key, $this->slugs))
+          {
+              $key_slug = array_search($key, $this->slugs);
+              if(empty($fields[$key_slug]) || !isset($fields[$key_slug]))
+              {
+                  $fields[$key_slug] = \Slug::make($fields[$key]);
+              }
+          }
+      }
+
+      return $fields;
   }
 
 } // end class

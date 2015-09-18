@@ -11,13 +11,19 @@ class Model
    * Nom de la table
    * @var string
    */
-	protected static $table;
+  protected static $table;
 
   /**
    * Champs modifiable ( fillable )
    * @var array
    */
   protected $fillable;
+
+  /**
+   * Champs à slugifier
+   * @var array
+   */
+  protected $slugifiable = array();
 
   /**
    * Constructor Static
@@ -30,16 +36,17 @@ class Model
       $query = new QueryBuilder( $dbtable->fillable );
       $query->from(self::GetTable());
       $query->setModel(get_called_class());
+      $query->setFieldstoSlugifier($dbtable->slugifiable);
 
       return call_user_func_array([$query, $method], $arguments);
   }
 
-	/**
-	 * Récupére le nom de la table
-	 */
-	private static function GetTable()
+  /**
+   * Récupére le nom de la table
+   */
+  private static function GetTable()
   {
-		  return strtolower(str_replace('App\Model\\', '', get_called_class()));
-	}
+      return strtolower(str_replace('App\Model\\', '', get_called_class()));
+  }
 
 } // end of class
