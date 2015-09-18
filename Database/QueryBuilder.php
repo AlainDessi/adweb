@@ -57,6 +57,19 @@ class QueryBuilder
   private $slugs=array();
 
   /**
+   * Limit
+   * @var int
+   */
+  private $limit;
+
+  /**
+   * Offset
+   * @var int
+   */
+  private $offset;
+
+
+  /**
    * __construct
    *
    * @param array $fillable
@@ -218,8 +231,22 @@ class QueryBuilder
           $order = ' ORDER BY ' . implode(',', $this->order);
       }
 
+      /* Traitement LIMIT */
+      $limit = '';
+      if(!empty($this->limit))
+      {
+        $limit = ' LIMIT ' . $this->limit;
+      }
+
+      /* Traitement OFFSET */
+      $offset = '';
+      if(!empty($this->offset))
+      {
+        $offset = ' OFFSET ' . $this->offset;
+      }
+
       /* création de la requete */
-      $sql = $select . $from . $joins . $where . $order;
+      $sql = $select . $from . $joins . $where . $order . $limit . $offset;
 
       return $sql;
   }
@@ -276,6 +303,29 @@ class QueryBuilder
   {
       $sql = $this->builder() . ' LIMIT 1';
       return Config::GetDb()->db_query( $sql, $this->model, true );
+  }
+
+  /**
+   * LIMIT QUERY SQL
+   *
+   * @param  [type] $limit [description]
+   * @return instance
+   */
+  public function limit($limit)
+  {
+    $this->limit = $limit;
+    return $this;
+  }
+
+  /**
+   * OFFSET QUERY SQL
+   *
+   * @param int $offest
+   */
+  public function offset($offset)
+  {
+    $this->offset = $offset;
+    return $this;
   }
 
   /**
