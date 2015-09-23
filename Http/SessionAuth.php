@@ -31,12 +31,12 @@ class SessionAuth extends Session
 
   public function getId()
   {
-    return get('Auth', 'id');
+    return $this->get('Auth', 'id');
   }
 
   public function getEmail()
   {
-    return get('Auth', 'email');
+    return $this->get('Auth', 'email');
   }
 
   public function hasLogged()
