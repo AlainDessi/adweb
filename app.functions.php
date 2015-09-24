@@ -171,3 +171,15 @@ function HttpError($error)
 {
   return View('errors.' . $error);
 }
+
+/**
+ * truncate action on HTML strings
+ * use Urodoz\Truncate\TruncateService;
+ *
+ * @return string
+ */
+function truncate($htmlString, $nbchar=100)
+{
+    $truncateService = new Urodoz\Truncate\TruncateService();
+    return $truncateService->truncate($htmlString, $nbchar);
+}
