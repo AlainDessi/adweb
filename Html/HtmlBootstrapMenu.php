@@ -73,20 +73,28 @@
             $rights  = $elements[3];
             $submenu = $elements[4];
 
-            if($submenu == null)
+            if($label === 'separator')
             {
-                $html .= "<li><a href=\"" . route($route) ."\"><i class=\"$icon\"></i> $label</a></li>\n";
+                  $html .= "<li class=\"divider\" role=\"separator\"></li>\n";
             }
             else
             {
-                $html .= "<li class=\"dropdown\">";
-                $html .= "<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\"expanded=\"false\">";
-                $html .= "<i class=\"$icon\"></i> $label <span class=\"caret\"></span></a>\n";
-                $html .= "<ul class=\"dropdown-menu\">";
-                $html .= $this->getContent($submenu);
-                $html .= "</li></ul>";
+                if($submenu == null)
+                {
+                    $html .= "<li><a href=\"" . route($route) ."\"><i class=\"$icon\"></i> $label</a></li>\n";
+                }
+                else
+                {
+                    $html .= "<li class=\"dropdown\">";
+                    $html .= "<a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\"expanded=\"false\">";
+                    $html .= "<i class=\"$icon\"></i> $label <span class=\"caret\"></span></a>\n";
+                    $html .= "<ul class=\"dropdown-menu\">";
+                    $html .= $this->getContent($submenu);
+                    $html .= "</li></ul>";
+                }
             }
         }
+
         return $html;
     }
 
