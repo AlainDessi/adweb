@@ -8,6 +8,7 @@ class Date
   private $DateStamp;
   private $str_date;
 
+  private $month = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
   public function __construct($DateStamp)
   {
@@ -67,5 +68,6 @@ class Date
   		$date = new \DateTime($datestamp);
 	   	return $date->format('d/m/Y');
 	}
+
 
 } // end class

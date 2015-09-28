@@ -14,7 +14,7 @@ class PhpErrors extends Errors
     $this->code = $e[0];
     $this->file = $e[2];
     $this->line = $e[3];
-    $this->content = debug_backtrace();
+    $this->content = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
 
     $this->error = "[ " . $this->getStrCode() . " ]";
   }

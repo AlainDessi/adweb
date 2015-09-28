@@ -111,7 +111,7 @@ function route( $alias, $arguments = null )
     extract($data);
 
     ob_start();
-    require( MODELS_DIR . '/' . $filename );
+    require( VIEWS_DIR . '/emails/' . $filename );
     $body = ob_get_contents();
     ob_end_clean();
 
