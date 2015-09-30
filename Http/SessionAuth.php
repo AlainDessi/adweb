@@ -29,6 +29,12 @@ class SessionAuth extends Session
     return $this;
   }
 
+  public function setRight($right)
+  {
+    $this->put('Auth', 'right', $right);
+    return $this;
+  }
+
   public function getId()
   {
     return $this->get('Auth', 'id');
