@@ -29,6 +29,12 @@ class SessionAuth extends Session
     return $this;
   }
 
+  public function setRight($right)
+  {
+    $this->put('Auth', 'right', $right);
+    return $this;
+  }
+
   public function getId()
   {
     return $this->get('Auth', 'id');
@@ -37,6 +43,11 @@ class SessionAuth extends Session
   public function getEmail()
   {
     return $this->get('Auth', 'email');
+  }
+
+  public function getRight()
+  {
+    return $this->get('Auth', 'right');
   }
 
   public function hasLogged()
