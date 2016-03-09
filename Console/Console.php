@@ -44,7 +44,6 @@ Class Console
     {
         // vérification de l'existance d'une commande
         if(count($this->args) > 0) {
-
             unset($this->args[0]);
 
             if(!$this->chkCommand()) {
@@ -76,7 +75,7 @@ Class Console
      */
     private function chkCommand()
     {
-        for ($i=1; $i < count($this->args); $i++) {
+        for ($i=1; $i <= count($this->args); $i++) {
             if(in_array($this->args[$i], $this->commandList)) {
                 $this->command = '\Core\Console\\' . ucfirst($this->args[$i]);
                 unset($this->args[$i]);
@@ -86,16 +85,36 @@ Class Console
         return false;
     }
 
+    public function getFileName()
+    {
+      foreach ($this->args as $value) {
+        if(substr($value, 0, 1) != '-') {
+          return $value;
+        }
+      }
+      return false;
+    }
+
     /**
      * Return formated string error
+     * @param  string $stringError
      * @return string
      */
-    private function error($stringError)
+    protected function error($stringError)
     {
         echo $this->instanceColor->StrColor($stringError, "white", "red") . "\n";
         echo "type 'adweb help' for help \n";
         exit();
     }
 
+    /**
+     * Return formated string success
+     * @param  string $stringSuccess
+     * @return echo
+     */
+    protected function success($stringSuccess)
+    {
+        echo $this->instanceColor->StrColor($stringSuccess, "green") . "\n";
+    }
 
 }
