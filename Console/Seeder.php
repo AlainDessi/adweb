@@ -14,9 +14,8 @@ class Seeder extends Console
 
         if ($filename) {
             $class = 'Bdd\seeder\\'.$filename;
-        }
-        else {
-            echo $color->StrColor(" Error : use adweb seeder <filename>" , "red" ) . "\n";
+        } else {
+             $this->success(" Error : use adweb seeder <filename> ");
             exit();
         }
 
