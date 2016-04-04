@@ -147,7 +147,7 @@ class HtmlBootstrapForm extends Html
       return $this;
   }
 
-  public function check($label,$name)
+  public function check($label, $name)
   {
       $this->prefix = '<div class="checkbox"><label>';
       $this->suffix = ' ' . $label . '</label></div>';
@@ -158,6 +158,30 @@ class HtmlBootstrapForm extends Html
 
       $this->tag = 'input';
 
+      return $this;
+  }
+
+  /**
+   * Ajoute champs input type = file
+   * @param  string $label
+   * @param  string $name
+   * @return instance
+   */
+  public function file($label, $name)
+  {
+      $this->input($label, $name, 'file');
+      return $this;
+  }
+
+  /**
+   * Ajoute champs input MAX_FILE_SIZE
+   * @param   $size valeur en Mo
+   * @return Instance
+   */
+  public function maxFileSize($size)
+  {
+      $this->hidden('MAX_FILE_SIZE');
+      $this->defaultValue(1024 * 1024 * $size);
       return $this;
   }
 
