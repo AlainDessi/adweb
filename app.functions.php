@@ -24,7 +24,9 @@ function debug( $var )
 }
 
 /**
- * Write a url by is Alias
+ * UrlBuilder
+ * Renvoi une url par rapport à
+ * un alias et ses arguments
  *
  * @param  string $alias
  * @param  mixed $arguments
@@ -32,18 +34,22 @@ function debug( $var )
  */
 function route( $alias, $arguments = null )
 {
-    $url = '/' . Routes::getUrlAlias($alias);
+    // récupére l'url
+    $url = '/' . Routes::getUrlByAlias($alias);
 
+    // ajoute les arguments à l'url
     if( gettype($arguments) === 'string' ) {
-      $url .= '/' . $arguments;
-    }
-    elseif(gettype($arguments) === 'array')
-    {
-      $url .= '/' . implode('/',$arguments);
+        $url = preg_replace('#:[a-z]+#', $arguments, $url);
+    } elseif(gettype($arguments) === 'array') {
+        foreach ($arguments as $value) {
+            $url = preg_replace('#:[a-z]+#', $value, $url, 1);
+        }
     }
 
+    // netoyage des / au cas ou
     $url = str_replace('//', '/', $url);
 
+    // retour de l'url complète
     return $url;
 }
 
@@ -182,4 +188,15 @@ function truncate($htmlString, $nbchar=100)
 {
     $truncateService = new Urodoz\Truncate\TruncateService();
     return $truncateService->truncate($htmlString, $nbchar);
+}
+
+/**
+ * Fonction en test
+ * @return [type] [description]
+ */
+function getRoutes()
+{
+  require __DIR__ . '/tests/routes.php';
+  $test = Routes::getRoutes();
+  var_dump($test);
 }

@@ -1,14 +1,14 @@
 <?php
 /**
  * Routeur de l'application
- * Merci à GrafikArt !
+ * Merci à GrafikArt pour son tutorial ...
  *
  * MySQL verion 5.5.43
  * PHP version 5.6.10
  *
  * @package     adweb/Buscobon MyFrameWork
  * @author      DESSI Alain <contact@alain-dessi.com>
- * @copyright   2015 Dessi Alain
+ * @copyright   2016 Dessi Alain
  * @link        http://www.alain-dessi.com
  */
 
@@ -220,6 +220,7 @@ class Router
     }
 
     /**
+     * --- Obsolet method ---
      * Renvoi l'url d'un Alias
      *
      * @param  string $alias
@@ -232,7 +233,26 @@ class Router
             $path = $route->getPath();
             return preg_replace('#/:[a-z]+#', '', $path);
         } else {
-            return 'no routes defined';
+            return 'no-routes-defined';
         }
     }
-} // End class
+
+    /**
+     * Renvoi l'url d'un Alias
+     * Utilisé par la fonction route($alias, $arguments)
+     *
+     * @param  string $alias
+     * @return string
+     */
+    public function getUrlByAlias($alias)
+    {
+        $route = $this->getRouteAlias($alias);
+        if ($route) {
+            $path = $route->getPath();
+            return $path;
+        } else {
+            return 'no-routes-defined';
+        }
+    }
+
+}
