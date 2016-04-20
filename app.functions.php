@@ -37,8 +37,13 @@ function route( $alias, $arguments = null )
     // récupére l'url
     $url = '/' . Routes::getUrlByAlias($alias);
 
+    // Gestion des arguments null !! attention aux routes avec plusieurs arguments
+    if(is_null($arguments)) {
+        $url = preg_replace('#:[a-z]+#', '', $url);
+    }
+
     // ajoute les arguments à l'url
-    if( gettype($arguments) === 'string' ) {
+    if(gettype($arguments) === 'string' ) {
         $url = preg_replace('#:[a-z]+#', $arguments, $url);
     } elseif(gettype($arguments) === 'array') {
         foreach ($arguments as $value) {
