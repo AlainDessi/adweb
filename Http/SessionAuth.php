@@ -7,74 +7,117 @@ use App\Model\Users;
 
 class SessionAuth extends Session
 {
-
-  public function __construct()
-  {
-      if(!session_id())
-      {
-          session_start();
-      }
-  }
-
-
-  public function setId($UserId)
-  {
-      $this->put('Auth', 'id', $UserId);
-      return $this;
-  }
-
-  public function setEmail($Email)
-  {
-    $this->put('Auth', 'email', $Email);
-    return $this;
-  }
-
-  public function setRight($right)
-  {
-    $this->put('Auth', 'right', $right);
-    return $this;
-  }
-
-  public function getId()
-  {
-    return $this->get('Auth', 'id');
-  }
-
-  public function getEmail()
-  {
-    return $this->get('Auth', 'email');
-  }
-
-  public function getRight()
-  {
-    return $this->get('Auth', 'right');
-  }
-
-  public function hasLogged()
-  {
-    if(isset($_SESSION['Auth'])){
-      return true;
+    /**
+     * Constructeur
+     */
+    public function __construct()
+    {
+        if (!session_id()) {
+            session_start();
+        }
     }
-    else {
-      return false;
+
+    /**
+     * Place l'ID de l'utilisateur dans la session
+     * @param int $userId
+     * @return instance
+     */
+    public function setId($userId)
+    {
+        $this->put('Auth', 'id', $userId);
+        return $this;
     }
-  }
 
-  public function check()
-  {
-    if(!$this->hasLogged()) {
-      redirect('login');
+    /**
+     * Place l'email de l'utilisateur dans la session
+     * @param string $email
+     * @return instance
+     */
+    public function setEmail($email)
+    {
+        $this->put('Auth', 'email', $email);
+        return $this;
     }
-  }
 
-  public function logout()
-  {
-    unset($_SESSION['Auth']);
-  }
+    /**
+     * Place les droits de l'utilisateur dans la session
+     * @param int $right
+     * @return instance
+     */
+    public function setRight($right)
+    {
+        $this->put('Auth', 'right', $right);
+        return $this;
+    }
 
-  public function rightName($right)
-  {
-    return Rights::getTitle($right);
-  }
+    /**
+     * Retourne l'id de l'utilisateur
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->get('Auth', 'id');
+    }
 
-} // end class
+    /**
+     * Retourne l'email de l'utilisateur
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->get('Auth', 'email');
+    }
+
+    /**
+     * Retourne les droits de l'utilisateur
+     * @return int
+     */
+    public function getRight()
+    {
+        return $this->get('Auth', 'right');
+    }
+
+   /**
+    * Vérification de l'utilisiteur est bien loggé
+    * @return boolean
+    */
+    public function hasLogged()
+    {
+        if (isset($_SESSION['Auth'])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+   /**
+    * Vérifie si l'utilisateur est bien loggué
+    * @return redirect
+    */
+    public function check()
+    {
+        if (!$this->hasLogged()) {
+            redirect('login');
+        }
+    }
+
+    /**
+     * Déconnecte l'utilisateur en supprimant
+     * la session relative à l'authentification
+     * @return boolean
+     */
+    public function logout()
+    {
+        unset($_SESSION['Auth']);
+        return true;
+    }
+
+    /**
+     * Retourne le nom du droit de l'utilisateur
+     * @return string
+     */
+    public function rightName($right)
+    {
+        return Rights::getTitle($right);
+    }
+}

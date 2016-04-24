@@ -6,10 +6,13 @@ use Alert;
 
 class Session
 {
-
+    /**
+     * Constructeur
+     * Démarre une session si elle n'a pas déjà été démarré
+     */
     public function __construct()
     {
-        if(empty(session_id()) && is_null(session_id())) {
+        if (empty(session_id()) && is_null(session_id())) {
             session_start();
         }
     }
@@ -45,13 +48,13 @@ class Session
      * @param  string $key
      * @return Boolean
      */
-    public function unsetValue($group, $key=null)
+    public function unsetValue($group, $key = null)
     {
-        if(empty($group)) {
-          return false;
+        if (empty($group)) {
+            return false;
         }
 
-        if(is_null($key)) {
+        if (is_null($key)) {
             unset($_SESSION[$group]);
             return true;
         } else {
@@ -66,13 +69,13 @@ class Session
      * @param  string $key
      * @return string or False si erreur
      */
-    public function get($group, $key=null)
+    public function get($group, $key = null)
     {
-        if(isset($_SESSION[$group])) {
-            if(is_null($key)) {
+        if (isset($_SESSION[$group])) {
+            if (is_null($key)) {
                 return $_SESSION[$group];
             } else {
-                if(isset($_SESSION[$group][$key])) {
+                if (isset($_SESSION[$group][$key])) {
                     return $_SESSION[$group][$key];
                 } else {
                     return false;
@@ -88,7 +91,7 @@ class Session
      * @param string $type (alert, warning, info, ...)
      * @param string $msg
      */
-    public function setMsg($type,$msg)
+    public function setMsg($type, $msg)
     {
         $_SESSION['msg'][$type] = $msg;
     }
@@ -99,15 +102,16 @@ class Session
      */
     public function danger($msg)
     {
-        $this->setMsg('danger',$msg);
+        $this->setMsg('danger', $msg);
     }
 
     /**
      * Ajoute un message de type Warning
      * @param  string $msg
      */
-    public function warning($msg) {
-        $this->setMsg('warning',$msg);
+    public function warning($msg)
+    {
+        $this->setMsg('warning', $msg);
     }
 
     /**
@@ -116,7 +120,7 @@ class Session
      */
     public function info($msg)
     {
-        $this->setMsg('info',$msg);
+        $this->setMsg('info', $msg);
     }
 
     /**
@@ -125,7 +129,7 @@ class Session
      */
     public function success($msg)
     {
-        $this->setMsg('success',$msg);
+        $this->setMsg('success', $msg);
     }
 
     /**
@@ -143,23 +147,25 @@ class Session
      */
     public function clearMsg()
     {
-      if(isset($_SESSION['msg'])) {
-          unset($_SESSION['msg']);
-      } else {
-          return false;
-      }
+        if (isset($_SESSION['msg'])) {
+            unset($_SESSION['msg']);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Affiche le message contenu dans la session
-     * @return string formated html string
+     * Message de type Bootstrap
+     * @return string formated html string or False si il n'a pas de message
      */
     public function printMsg()
     {
-        if(isset($_SESSION['msg'])) {
+        if (isset($_SESSION['msg'])) {
             $html = '';
             foreach ($_SESSION['msg'] as $key => $value) {
-                $html .= Alert::alert($key,$value) . "\n";
+                $html .= Alert::alert($key, $value) . "\n";
             }
             $this->clearMsg();
             return $html;
@@ -167,5 +173,4 @@ class Session
             return false;
         }
     }
-
 }
