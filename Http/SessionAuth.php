@@ -7,8 +7,11 @@ use App\Model\Users;
 
 class SessionAuth extends Session
 {
+
     /**
-     * Constructeur
+     * Constructeur - démarre une session
+     * si inexistante
+     * @method __construct
      */
     public function __construct()
     {
@@ -18,30 +21,33 @@ class SessionAuth extends Session
     }
 
     /**
-     * Place l'ID de l'utilisateur dans la session
-     * @param int $userId
+     * Défini l'Id de l'utilisateur connecté
+     * @method setId
+     * @param  integer $UserId
      * @return instance
      */
-    public function setId($userId)
+    public function setId($UserId)
     {
-        $this->put('Auth', 'id', $userId);
+        $this->put('Auth', 'id', $UserId);
         return $this;
     }
 
     /**
-     * Place l'email de l'utilisateur dans la session
-     * @param string $email
+     * Définition de l'émail de l'utilisateur connecté
+     * @method setEmail
+     * @param  string $Email
      * @return instance
      */
-    public function setEmail($email)
+    public function setEmail($Email)
     {
-        $this->put('Auth', 'email', $email);
+        $this->put('Auth', 'email', $Email);
         return $this;
     }
 
     /**
-     * Place les droits de l'utilisateur dans la session
-     * @param int $right
+     * Définition des droits de l'utilisateur connecté
+     * @method setRight
+     * @param  integer  $right
      * @return instance
      */
     public function setRight($right)
@@ -51,8 +57,9 @@ class SessionAuth extends Session
     }
 
     /**
-     * Retourne l'id de l'utilisateur
-     * @return int
+     * Retourne l'id de l'utilisateur connecté
+     * @method getId
+     * @return integer
      */
     public function getId()
     {
@@ -60,7 +67,8 @@ class SessionAuth extends Session
     }
 
     /**
-     * Retourne l'email de l'utilisateur
+     * Retourne l'email de l'utilisateur connecté
+     * @method getEmail
      * @return string
      */
     public function getEmail()
@@ -70,17 +78,19 @@ class SessionAuth extends Session
 
     /**
      * Retourne les droits de l'utilisateur
-     * @return int
+     * @method getRight
+     * @return integer
      */
     public function getRight()
     {
         return $this->get('Auth', 'right');
     }
 
-   /**
-    * Vérification de l'utilisiteur est bien loggé
-    * @return boolean
-    */
+    /**
+     * Verifié si un utilisateur est connecté
+     * @method hasLogged
+     * @return boolean
+     */
     public function hasLogged()
     {
         if (isset($_SESSION['Auth'])) {
@@ -90,10 +100,11 @@ class SessionAuth extends Session
         }
     }
 
-   /**
-    * Vérifie si l'utilisateur est bien loggué
-    * @return redirect
-    */
+    /**
+     * Redirige vers la page de login si pas connecté
+     * @method check
+     * @return redirect
+     */
     public function check()
     {
         if (!$this->hasLogged()) {
@@ -102,22 +113,44 @@ class SessionAuth extends Session
     }
 
     /**
-     * Déconnecte l'utilisateur en supprimant
-     * la session relative à l'authentification
+     * Deconnecte un utilisateur
+     * permet de supprimer la sessions et toutes les données
+     * @method logout
      * @return boolean
      */
     public function logout()
     {
-        unset($_SESSION['Auth']);
+        // effacement de toutes les données de session
+        $_SESSION = [];
+
+        // effacement du cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+        // destruction de la session
+        session_destroy();
+
+        // return provisoire
         return true;
     }
 
     /**
-     * Retourne le nom du droit de l'utilisateur
+     * Retourne le nom du droit
+     * @method rightName
+     * @param  int  $right
      * @return string
      */
     public function rightName($right)
     {
         return Rights::getTitle($right);
     }
-}
+} // end class
