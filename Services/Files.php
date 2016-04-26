@@ -2,48 +2,52 @@
 
 namespace Core\Services;
 
+class Files
+{
 
-class Files {
-
-
-	public $path_dir;
-
-
-  /**
-   * Lecture d'un répertoire
-   * @param [type] $dir [description]
-   */
-	public static function ReadDir( $dir ) {
-
-			return glob( $dir.'*.*' );
-
-	}
+    /**
+     * [$path_dir description]
+     * @var [type]
+     */
+    public $path_dir;
 
 
-  /* ajoute un répertoire Media */
-  public static function CreateMediaDir( $dir_name )
-  {
-    $dir = MEDIA_DIR . $dir_name;
-    $path = self::CreateDir($dir);
-
-    return $path;
-
-  }
-
-  /**
-   * Crée un répertoire avec les droits maximum est renvoi le chemin
-   * @param [type] $path [description]
-   */
-  public static function CreateDir( $path )
-  {
-    // test de l'existance du dossier
-    if ( !is_dir( $path )) {
-      // création directory
-      if ( !mkdir( $path, 0777 ) ) {
-        return false;
-      }
+    /**
+     * Lecture d'un répertoire
+     * @param [type] $dir [description]
+     */
+    public static function ReadDir($dir)
+    {
+        return glob($dir.'*.*');
     }
-    return $path;
-  }
 
-} // end class
+    /**
+     * ajoute un répertoire Media
+     * @param String $dir_name
+     */
+    public static function CreateMediaDir($dirname)
+    {
+        $dir = MEDIA_DIR . $dirname;
+        $path = self::CreateDir($dir);
+
+        return $path;
+
+    }
+
+    /**
+     * Crée un répertoire avec les droits maximum est renvoi le chemin
+     * @param string $path
+     */
+    public static function CreateDir($path)
+    {
+        // test de l'existance du dossier
+        if (!is_dir($path)) {
+          // création directory
+            if (!mkdir($path, 0777)) {
+                return false;
+            }
+        }
+        return $path;
+    }
+
+}

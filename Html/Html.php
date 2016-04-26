@@ -7,7 +7,6 @@ class Html
 
   /**
    * Attributes ( class, id, name )
-   *
    * @var array
    */
     protected $attributes = [];

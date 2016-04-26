@@ -6,8 +6,8 @@
  * MySQL verion 5.5.43
  * PHP version 5.6.10
  *
- * @category    Catérogie
- * @package     None
+ * @category    Services
+ * @package     adweb
  * @author      Kevin Le Brun <lebrun.k@gmail.com>
  * @link        https://github.com/kevinlebrun/slug.php
  */

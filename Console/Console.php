@@ -103,7 +103,7 @@ Class Console
     protected function error($stringError)
     {
         echo $this->instanceColor->StrColor($stringError, "white", "red") . "\n";
-        echo "type 'adweb help' for help \n";
+        echo "type 'php adweb help' for help \n";
         exit();
     }
 
