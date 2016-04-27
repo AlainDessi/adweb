@@ -27,26 +27,8 @@ class Controller
      */
     public function __construct($viewsDir = null, $cacheDir = null)
     {
-        if(is_null($viewsDir)) {
-            if(isset(VIEWS_DIR)) {
-                $this->path_views = VIEWS_DIR;
-            } else {
-                $this->path_views = "";
-            }
-        } else {
-            $this->path_views = $viewsDir;
-        }
-
-        if(is_null($cacheDir)) {
-            if(isset(VIEWS_DIR)) {
-                $this->path_cache = CACHE_DIR;
-            } else {
-                $this->path_cache = "";
-            }
-        } else {
-            $this->path_cache = $cacheDir;
-        }
-
+        $this->path_views = VIEWS_DIR;
+        $this->path_cache = CACHE_DIR;
     }
 
     /**
