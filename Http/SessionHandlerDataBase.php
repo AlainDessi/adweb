@@ -137,7 +137,8 @@ class SessionHandlerDataBase implements \SessionHandlerInterface
             $sqlUpdate = 'UPDATE ' . $this->session_table . '
                           SET session_data=\'' . $session_data . '\', session_expire=\'' . $session_expire . '\'
                           WHERE session_id=\'' . $session_id . '\';';
-            return $this->link_db->exec($sqlUpdate);
+            $update = $this->link_db->prepare($sqlUpdate);
+            return $update->execute();
         }
     }
 
