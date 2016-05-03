@@ -4,7 +4,7 @@ namespace Core\Console;
 
 use Core\Http\Router;
 
-Class Console
+class Console
 {
     /**
      * Arguments passé sur la console
@@ -19,7 +19,8 @@ Class Console
     protected $commandList = [
                           'migrate',
                           'seeder',
-                          'routes'
+                          'routes',
+                          'make'
                         ];
 
     /**
@@ -43,12 +44,12 @@ Class Console
     public function run()
     {
         // vérification de l'existance d'une commande
-        if(count($this->args) > 0) {
+        if (count($this->args) > 0) {
             unset($this->args[0]);
 
-            if(!$this->chkCommand()) {
-              $this->error(' Command not found ! ');
-              exit();
+            if (!$this->chkCommand()) {
+                $this->error(' Command not found ! ');
+                exit();
             }
 
             // execute la class correspondate à la fonctions
@@ -56,7 +57,7 @@ Class Console
             $exec->executeCommand();
 
         } else {
-           error('aucune commande à executer');
+            error('aucune commande à executer');
         }
     }
 
@@ -76,7 +77,7 @@ Class Console
     private function chkCommand()
     {
         for ($i=1; $i <= count($this->args); $i++) {
-            if(in_array($this->args[$i], $this->commandList)) {
+            if (in_array($this->args[$i], $this->commandList)) {
                 $this->command = '\Core\Console\\' . ucfirst($this->args[$i]);
                 unset($this->args[$i]);
                 return true;
@@ -87,12 +88,12 @@ Class Console
 
     public function getFileName()
     {
-      foreach ($this->args as $value) {
-        if(substr($value, 0, 1) != '-') {
-          return $value;
+        foreach ($this->args as $value) {
+            if (substr($value, 0, 1) != '-') {
+                return $value;
+            }
         }
-      }
-      return false;
+        return false;
     }
 
     /**
@@ -116,5 +117,4 @@ Class Console
     {
         echo $this->instanceColor->StrColor($stringSuccess, "green") . "\n";
     }
-
 }

@@ -9,7 +9,7 @@
  */
 
 // version et release
-define('VERSION', 'V0.5.0');
+define('VERSION', 'V0.5.3');
 
 // Set Time Zone
 date_default_timezone_set('Europe/Paris');

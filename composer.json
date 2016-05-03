@@ -17,7 +17,6 @@
         "phpmailer/phpmailer": "^5.2",
         "philo/laravel-blade": "^3.0",
         "phpunit/phpunit": "^4.8",
-        "urodoz/truncate-html": "@stable",
-        "intervention/image": "^2.3"
+        "urodoz/truncate-html": "@stable"
     }
 }
