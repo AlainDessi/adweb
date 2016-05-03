@@ -29,10 +29,10 @@ class Files
     /**
      * Crée un répertoire avec les droits maximum est renvoi le chemin
      * @param string $path
-     * @param string $right
+     * @param integer $right  mode en base octale
      * @return string chemin du dossier ou false en cas d'erreur
      */
-    public static function createDir($path, $right = "0777")
+    public static function createDir($path, $right = 0777)
     {
         $directories = explode('/', $path);
         $currentPath = '';
