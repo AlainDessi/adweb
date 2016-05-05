@@ -4,13 +4,12 @@ namespace Core\Console;
 
 class Make extends Console
 {
-
     private $type = [ 'controller',
                       'model',
                       'seedder' ];
 
     /**
-     * Execute la commande d'affichage des routes de l'application
+     * Execute la commande de création
      * @return string
      */
     public function executeCommand()
@@ -21,6 +20,9 @@ class Make extends Console
             } else {
                 $this->error('Erreur impossible de créer un ' . $this->args[2]);
             }
+        } else {
+            $this->error(" Error : use adweb make controller, model or seeder");
+            exit();
         }
     }
 

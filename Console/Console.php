@@ -20,7 +20,8 @@ class Console
                           'migrate',
                           'seeder',
                           'routes',
-                          'make'
+                          'make',
+                          'help'
                         ];
 
     /**
