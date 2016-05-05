@@ -27,7 +27,7 @@ class Make extends Console
     }
 
     /**
-     * [controllerBuilder description]
+     * Ecriture du fichier controller
      * @method controllerBuilder
      * @param  [type]            $args [description]
      * @return [type]                  [description]
