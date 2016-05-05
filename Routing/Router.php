@@ -56,12 +56,13 @@ class Router
      */
     public function __construct()
     {
+        // récupération de l'url
         if (!empty($_GET['url'])) {
             $url = $_GET['url'];
         } else {
             $url = '';
         }
-
+        
         if (!empty($url) || !is_null($url)) {
             $this->url = $url;
             if (isset($_SERVER['REQUEST_METHOD'])) {
@@ -74,7 +75,6 @@ class Router
 
     /**
      * Création d'une route en GET
-     *
      * @param  string $path
      * @param  string $callable
      * @param  string $alias
@@ -87,7 +87,6 @@ class Router
 
     /**
      * Création d'une route en POST
-     *
      * @param  string $path
      * @param  string $callable
      * @param  string $alias
@@ -97,6 +96,33 @@ class Router
     {
         return $this->addRoute($path, $callable, $alias, 'POST');
     }
+
+    /**
+     * Création d'une route en PUT
+     * @method put
+     * @param  string $path
+     * @param  string $callable
+     * @param  string $alias
+     * @return object route
+     */
+    public function put($path, $callable, $alias = null)
+    {
+        return $this->addRoute($path, $callable, $alias, 'PUT');
+    }
+
+    /**
+     * Création d'une route en DELETE
+     * @method put
+     * @param  string $path
+     * @param  string $callable
+     * @param  string $alias
+     * @return object route
+     */
+    public function delete($path, $callable, $alias = null)
+    {
+        return $this->addRoute($path, $callable, $alias, 'DELETE');
+    }
+
 
     /**
      * Création automatique des routes d'un controller par default
@@ -167,7 +193,9 @@ class Router
     }
 
     /**
-     * Vérifie les routes / url
+     * Vérifie les routes / url puis execute la route
+     * @method run
+     * @return nothing
      */
     public function run()
     {
@@ -175,28 +203,31 @@ class Router
             if (!isset($this->routes[$this->url_method])) {
                 throw new RouterException('REQUEST METHOD not exist');
             }
-
-          // recherche de la route
+            // recherche de la route
             foreach ($this->routes[ $this->url_method ] as $route) {
                 if ($route->match($this->url)) {
                     return $route->call();
                 }
             }
-
-          // pas de route trouvé
+            // pas de route trouvé
             throw new RouterException('Aucune routes ne correspond à cette URL', '404');
         } catch (RouterException $e) {
             if (\Core\Config::get('dev')) {
                 ExeptionError($e);
             } else {
-                HttpError('404');
+                if ($this->url_method === 'GET') {
+                    HttpError('404');
+                    exit();
+                } else {
+                    http_response_code(405);
+                    exit();
+                }
             }
         }
     }
 
     /**
-     * Return value of routes
-     *
+     * Rtourne les routes
      * @return array
      */
     public function getRoutes()
@@ -206,7 +237,6 @@ class Router
 
     /**
      * Renvoi la route par rapport à son alias
-     *
      * @param  string $alias
      * @return object route
      */
@@ -222,7 +252,6 @@ class Router
     /**
      * --- Obsolet method ---
      * Renvoi l'url d'un Alias
-     *
      * @param  string $alias
      * @return string
      */
@@ -240,7 +269,6 @@ class Router
     /**
      * Renvoi l'url d'un Alias
      * Utilisé par la fonction route($alias, $arguments)
-     *
      * @param  string $alias
      * @return string
      */
@@ -254,5 +282,4 @@ class Router
             return 'no-routes-defined';
         }
     }
-
 }

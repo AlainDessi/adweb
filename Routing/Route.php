@@ -81,22 +81,16 @@ class Route
     public function call()
     {
         if (is_string($this->callable)) {
-
             $call_method = explode('@', $this->callable);
             $controller = 'App\Controller\\' . $call_method[0];
             $action = $call_method[1];
 
             if (method_exists($controller, $action)) {
-
                 $get_controller = new $controller();
                 return call_user_func_array([$get_controller, $action], $this->matches);
-
             }
-
         } else {
-
             return call_user_func_array($this->callable, $this->matches);
-
         }
     }
 
@@ -126,4 +120,4 @@ class Route
     {
         return $this->alias;
     }
-} // End class
+}
