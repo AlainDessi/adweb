@@ -46,4 +46,20 @@ class Request
             return false;
         }
     }
+
+    /**
+     * check is an ajax request
+     * @return boolean
+     */
+    public function isAjax()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
