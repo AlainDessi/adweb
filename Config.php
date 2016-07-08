@@ -3,9 +3,9 @@
   * Buscobon
   * Accès aux variables de configuration générale
   *
-  * @author    	DESSI Alain <alain.dessi@laposte.net>
-  * @copyright 	2015 Dessi Alain
-  * @link      	http://www.alain-dessu.com
+  * @author     DESSI Alain <alain.dessi@laposte.net>
+  * @copyright  2015 Dessi Alain
+  * @link       http://www.alain-dessu.com
   */
 
 namespace Core;
@@ -24,7 +24,7 @@ class Config
      * Instance de la base de données
      * @var instance
      */
-		private static $database;
+    private static $database;
 
     /**
      * Instance de PHP mailer
@@ -36,19 +36,19 @@ class Config
      * Instance de la config
      * @var instance
      */
-		private static $_instance;
+    private static $_instance;
 
     /**
      * Paramètres de l'application
      * @var array
      */
-		private $settings = array();
+    private $settings = array();
 
 
-  	/**
-  	 * récupére la configuration de l'application
-  	 */
-  	private function __construct()
+    /**
+     * récupére la configuration de l'application
+     */
+    private function __construct()
     {
         $files = glob(self::CONFIG_PATH . '*.config.php');
 
@@ -57,19 +57,19 @@ class Config
             $name_file = str_replace(['.config.php', self::CONFIG_PATH], '', $file);
             $this->settings[$name_file] = require($file);
         }
-  	}
+    }
 
-  	/**
-  	 *  Instancifie une seule fois la config
-  	 *  @return instance
-  	 */
-  	public static function GetConfig()
+    /**
+     *  Instancifie une seule fois la config
+     *  @return instance
+     */
+    public static function GetConfig()
     {
-    		if( is_null(self::$_instance)) {
-    			 self::$_instance = new Config();
-    		}
+        if (is_null(self::$_instance)) {
+             self::$_instance = new Config();
+        }
         return self::$_instance;
-  	}
+    }
 
     /**
      * ALIAS de GetSet($namesetting)
@@ -83,24 +83,21 @@ class Config
         return self::GetSet($namesetting);
     }
 
-  	/**
-  	 * Renvoie une valeur de variable de configuration
+    /**
+     * Renvoie une valeur de variable de configuration
      *
      * @param  string $namesetting contient également le nom du fichier de config ( exemple 'button.save' )
      * @return mixed
      */
-  	public static function GetSet($name_setting)
+    public static function GetSet($name_setting)
     {
-        $args = explode('.', $name_setting,2);
+        $args = explode('.', $name_setting, 2);
 
         // initialisation de la configuration
-        if(!empty($args[1]))
-        {
+        if (!empty($args[1])) {
             $group = $args[0];
             $name_setting = $args[1];
-        }
-        else
-        {
+        } else {
             $group = 'user';
             $name_setting = $args[0];
         }
@@ -108,32 +105,46 @@ class Config
         $set = self::GetConfig();
 
         // récuprération de la valeur de configuration
-        if(isset($set->settings[$group][$name_setting]))
-        {
+        if (isset($set->settings[$group][$name_setting])) {
             return $set->settings[$group][$name_setting];
-        }
-        else
-        {
+        } else {
             return null;
         }
-  	}
+    }
 
-  	/**
-  	 * Initialise et retourne la base de donnée
-  	 * @return instance
-  	 */
+    /**
+     * Initialise et retourne la base de donnée
+     * @return instance
+     */
     public static function GetDb()
     {
         if (self::$database == null) {
             $instance = self::GetConfig();
-  	   			self::$database = new Database( $instance->settings['user']['db_host'],
-                                            $instance->settings['user']['db_user'],
-                                            $instance->settings['user']['db_password'],
-                                            $instance->settings['user']['db_name'],
-                                            $instance->settings['user']['db_charset']);
-  			}
-  			return self::$database;
-  	}
+                self::$database = new Database(
+                    $instance->settings['user']['db_host'],
+                    $instance->settings['user']['db_user'],
+                    $instance->settings['user']['db_password'],
+                    $instance->settings['user']['db_name'],
+                    $instance->settings['user']['db_charset']
+                );
+        }
+            return self::$database;
+    }
+
+    /**
+     * Retourne la configuration complête d'un fichier
+     * @param  string $setting
+     * @return array();
+     */
+    public static function getConfigOf($setting)
+    {
+        $set = self::GetConfig();
+        if (isset($set->settings[$setting])) {
+            return $set->settings[$setting];
+        } else {
+            return array();
+        }
+    }
 
     /**
      * Instance de PHPMailer
@@ -143,7 +154,7 @@ class Config
     {
         $params = \Params::get();
 
-        if(self::$emailconfig == null) {
+        if (self::$emailconfig == null) {
             $instance = self::GetConfig();
             self::$emailconfig = new PHPMailer;
             self::$emailconfig->isSMTP();
