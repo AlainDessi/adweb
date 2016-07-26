@@ -7,10 +7,16 @@ use Core\Config;
 class Model
 {
     /**
-     * Nom de la table
+     * Nom de la table (Obsolet)
      * @var string
      */
     protected static $table;
+
+    /**
+     * Nom de la table si different du nom de la classe
+     * @var string
+     */
+    protected $tableName;
 
     /**
      * Champs modifiable ( fillable )
@@ -32,8 +38,14 @@ class Model
         $class = get_called_class();
         $dbtable = new $class;
 
+        // initialisation du QueryBuilder
         $query = new QueryBuilder($dbtable->fillable);
-        $query->from(self::GetTable());
+        // definition du nom de la table
+        if (!empty($dbtable->tableName)) {
+            $query->from($dbtable->tableName);
+        } else {
+            $query->from(self::GetTable());
+        }
         $query->setModel(get_called_class());
         $query->setFieldstoSlugifier($dbtable->slugifiable);
 
