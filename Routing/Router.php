@@ -52,6 +52,16 @@ class Router
                           '/delete/:id' => 'GET' ];
 
     /**
+     * Methodes d'une class controller API RESTFULL par default
+     * @var array
+     */
+    private $methodsApi = [ '/index/:id'    => 'GET',
+                            '/update/:id'   => 'PUT',
+                            '/create'       => 'POST',
+                            '/delete/:id'   => 'DELETE' ];
+
+
+    /**
      * Constructeur
      */
     public function __construct()
@@ -62,7 +72,7 @@ class Router
         } else {
             $url = '';
         }
-        
+
         if (!empty($url) || !is_null($url)) {
             $this->url = $url;
             if (isset($_SERVER['REQUEST_METHOD'])) {
@@ -162,6 +172,33 @@ class Router
 
             $callable = $callclass . '@' . str_replace(['/',':','id'], '', $method);
 
+            $this->addRoute($finalpath, $callable, $alias, $type);
+        }
+    }
+
+    /**
+     * Création automatique des routes d'un controller pour API RESTFULL
+     *
+     * @param  string $path
+     * @param  string $callclass
+     * @return  void
+     */
+    public function api($path, $callclass, $baseAlias = null)
+    {
+        //Création de la route de base
+        $this->addRoute($path, $callclass . '@index', $path, 'GET');
+
+        // génération des routes necessaires
+        foreach ($this->methodsApi as $method => $type) {
+            // récupération du nom de la methode
+            $methodName = str_replace(['/',':','id'], '', $method);
+            // préparation de l'url
+            $finalpath = $path . '/' . str_replace([$methodName, '/'], '', $method);
+            // Génération de l'allias
+            $alias = $path . '.' . $methodName;
+            // Génération du nom de la methode de la class
+            $callable = $callclass . '@' . str_replace(['/',':','id'], '', $method);
+            // création de la route
             $this->addRoute($finalpath, $callable, $alias, $type);
         }
     }
