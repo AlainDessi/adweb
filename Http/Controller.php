@@ -84,11 +84,24 @@ class Controller
             'debug'         => \Core\Config::get('twig.debug'),
             'auto_reload'   => \Core\Config::get('twig.auto_reload')
         ));
+
+        // Création de données pour twig
+        $add_data = [
+            'session' => [
+                'hasmsg'    => \Session::hasMsg(),
+                'msg'       => \Session::printMsg()
+            ]
+        ];
+
+        // ajout des données de session pour twig
         if (is_null($data)) {
-            echo $twig->render($page);
+            $data = $add_data;
         } else {
-            echo $twig->render($page, $data);
+            array_merge($data, $add_data);
         }
+
+        // affichage de la page
+        echo $twig->render($page, $data);
     }
 
     /**
@@ -107,6 +120,28 @@ class Controller
             $this->renderTwig($page, $data);
         } elseif (\Core\Config::get('render') === 'php') {
             $this->render($page, $data);
+        }
+    }
+
+    /**
+     * Http Accept control Cors
+     * @return [type] [description]
+     */
+    public function cors()
+    {
+        // définition des domaines autorisée à recevoir les données
+        header("Access-Control-Allow-Origin: *");
+        header('Access-Control-Allow-Credentials: true');
+
+        // Access-Control headers are received during OPTIONS requests
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
+                header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+            }
+            if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+            }
+            exit();
         }
     }
 }

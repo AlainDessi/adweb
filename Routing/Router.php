@@ -52,16 +52,6 @@ class Router
                           '/delete/:id' => 'GET' ];
 
     /**
-     * Methodes d'une class controller API RESTFULL par default
-     * @var array
-     */
-    private $methodsApi = [ '/index/:id'    => 'GET',
-                            '/update/:id'   => 'PUT',
-                            '/create'       => 'POST',
-                            '/delete/:id'   => 'DELETE' ];
-
-
-    /**
      * Constructeur
      */
     public function __construct()
@@ -185,22 +175,25 @@ class Router
      */
     public function api($path, $callclass, $baseAlias = null)
     {
-        //Création de la route de base
-        $this->addRoute($path, $callclass . '@index', $path, 'GET');
-
-        // génération des routes necessaires
-        foreach ($this->methodsApi as $method => $type) {
-            // récupération du nom de la methode
-            $methodName = str_replace(['/',':','id'], '', $method);
-            // préparation de l'url
-            $finalpath = $path . '/' . str_replace([$methodName, '/'], '', $method);
-            // Génération de l'allias
-            $alias = $path . '.' . $methodName;
-            // Génération du nom de la methode de la class
-            $callable = $callclass . '@' . str_replace(['/',':','id'], '', $method);
-            // création de la route
-            $this->addRoute($finalpath, $callable, $alias, $type);
+        // définition du nom de l'alias en fonction du path
+        if (is_null($baseAlias)) {
+            $alias_name = str_replace(['/',':','id'], '', $path);
+        } else {
+            $alias_name = $baseAlias;
         }
+
+        // route de base (index)
+        $this->addRoute($path, $callclass . '@index', $alias_name, 'GET');
+        // Afficher (read)
+        $this->addRoute($path . '/:id', $callclass . '@index', $alias_name . 'get' , 'GET');
+        // création (create)
+        $this->addRoute($path, $callclass . '@create', $alias_name . '.create', 'POST');
+        // Modification (update)
+        $this->addRoute($path . '/:id', $callclass . '@update', $alias_name . '.edit', 'PUT');
+        // Effacement (delete)
+        $this->addRoute($path . '/:id', $callclass . '@delete', $alias_name . '.delete', 'DELETE');
+        // Options
+        $this->addRoute($path . '/:id', $callclass . '@index', $alias_name . '.options', 'OPTIONS');
     }
 
     /**
