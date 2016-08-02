@@ -73,6 +73,12 @@
             $rights  = $elements[3];
             $submenu = $elements[4];
 
+            if (\Auth::getRight() < $rights) {
+                $disabled = true;
+            } else {
+                $disabled = false;
+            }
+
             if($label === 'separator')
             {
                   $html .= "<li class=\"divider\" role=\"separator\"></li>\n";
@@ -81,7 +87,12 @@
             {
                 if($submenu == null)
                 {
-                    $html .= "<li><a href=\"" . route($route) ."\"><i class=\"$icon\"></i> $label</a></li>\n";
+                    if ($disabled) {
+                        $html .= "<li class=\"disabled\"><a href=\"#\"><i class=\"$icon\"></i> $label</a></li>\n";
+                    } else {
+                        $html .= "<li><a href=\"" . route($route) ."\"><i class=\"$icon\"></i> $label</a></li>\n";
+                    }
+
                 }
                 else
                 {
