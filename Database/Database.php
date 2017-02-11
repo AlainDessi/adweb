@@ -17,13 +17,13 @@ namespace Core\Database;
 class Database
 {
 
-  private $db_host;
-  private $db_user;
-  private $db_pass;
-  private $db_name;
-  private $db_charset;
+    private $db_host;
+    private $db_user;
+    private $db_pass;
+    private $db_name;
+    private $db_charset;
 
-  private $link_db;
+    private $link_db;
 
 
   /**
@@ -34,31 +34,30 @@ class Database
    * @param strng $pass
    * @param strng $dbname
    */
-  function __construct( $host, $user, $pass, $dbname, $charset )
-  {
-      $this->db_host    = $host;
-      $this->db_user    = $user;
-      $this->db_pass    = $pass;
-      $this->db_name    = $dbname;
-      $this->db_charset = $charset;
-  }
+    public function __construct($host, $user, $pass, $dbname, $charset)
+    {
+        $this->db_host    = $host;
+        $this->db_user    = $user;
+        $this->db_pass    = $pass;
+        $this->db_name    = $dbname;
+        $this->db_charset = $charset;
+    }
 
 
   /**
    * Ouverture base de données
    */
-  public function db_open()
-  {
-      if( $this->link_db === null )
-      {
-          $pdo = new \PDO( "mysql:dbname={$this->db_name};host={$this->db_host}", $this->db_user, $this->db_pass );
-          $pdo->exec("set names utf8");
-          $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    public function db_open()
+    {
+        if ($this->link_db === null) {
+            $pdo = new \PDO("mysql:dbname={$this->db_name};host={$this->db_host}", $this->db_user, $this->db_pass);
+            $pdo->exec("set names utf8");
+            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-           $this->link_db = $pdo;
-      }
-      return $this->link_db;
-  }
+             $this->link_db = $pdo;
+        }
+        return $this->link_db;
+    }
 
 
   /**
@@ -70,21 +69,18 @@ class Database
    *
    * @return mixed Résultat de la requete
    */
-  public function db_query( $sql, $class_name, $one_rec=false )
-  {
-      $req = $this->db_open()->query($sql);
-      $req->setFetchMode(\PDO::FETCH_CLASS, $class_name);
+    public function db_query($sql, $class_name, $one_rec = false)
+    {
+        $req = $this->db_open()->query($sql);
+        $req->setFetchMode(\PDO::FETCH_CLASS, $class_name);
 
-      if($one_rec)
-      {
-          $data = $req->fetch();
-      }
-      else
-      {
-          $data = $req->fetchAll();
-      }
-      return $data;
-  }
+        if ($one_rec) {
+            $data = $req->fetch();
+        } else {
+            $data = $req->fetchAll();
+        }
+        return $data;
+    }
 
 
   /**
@@ -92,10 +88,10 @@ class Database
    *
    * @param  string $sql Requete SQL
    */
-  public function db_exec($sql)
-  {
-      $req = $this->db_open()->exec($sql);
-  }
+    public function db_exec($sql)
+    {
+        $req = $this->db_open()->exec($sql);
+    }
 
 
   /**
@@ -107,39 +103,37 @@ class Database
    *
    * @return  mixed   renvoi false en cas d'erreur sinon renvoi l'id de l'enregistrement
    */
-  public function db_insert($table_name, $set_fields)
-  {
-      $sql = "INSERT INTO `$table_name` ";
+    public function db_insert($table_name, $set_fields)
+    {
+        $sql = "INSERT INTO `$table_name` ";
 
-      $fields = '(';
-      $values = 'VALUES (';
+        $fields = '(';
+        $values = 'VALUES (';
 
-      foreach ($set_fields as $key => $value)
-      {
-          $fields .= " `$key`,";
-          $values .= " :$key,";
-          $value_exec[':'.$key] = $value;
-      }
+        foreach ($set_fields as $key => $value) {
+            $fields .= " `$key`,";
+            $values .= " :$key,";
+            $value_exec[':'.$key] = $value;
+        }
 
-      $fields = substr($fields,0,strlen($fields)-1);
-      $values = substr($values,0,strlen($values)-1);
+        $fields = substr($fields, 0, strlen($fields)-1);
+        $values = substr($values, 0, strlen($values)-1);
 
-      $fields .= " ) ";
-      $values .= " ) ";
+        $fields .= " ) ";
+        $values .= " ) ";
 
-      $sql = $sql.$fields.$values;
+        $sql = $sql.$fields.$values;
 
-      $req = $this->db_open()->prepare( $sql );
-      $req->execute( $value_exec );
+        $req = $this->db_open()->prepare($sql);
+        $req->execute($value_exec);
 
-      if($req)
-      {
-          // recupere l'ID de l'enregistrement crée
-          $req = $this->db_open()->lastInsertId();
-      }
+        if ($req) {
+        // recupere l'ID de l'enregistrement crée
+            $req = $this->db_open()->lastInsertId();
+        }
 
-      return $req;
-  }
+        return $req;
+    }
 
 
   /**
@@ -151,24 +145,23 @@ class Database
    *
    * @return boolean
    */
-  public function db_delete($table, $class_name, $conditions)
-  {
-      $condition = "";
+    public function db_delete($table, $class_name, $conditions)
+    {
+        $condition = "";
 
-      foreach ($conditions as $key => $value)
-      {
-          $condition .= "`$key`=:$key AND ";
-          $value_exec[':'.$key] = $value;
-      }
+        foreach ($conditions as $key => $value) {
+            $condition .= "`$key`=:$key AND ";
+            $value_exec[':'.$key] = $value;
+        }
 
-      $condition = substr($condition,0,strlen($condition)-4);
+        $condition = substr($condition, 0, strlen($condition)-4);
 
-      $sql = "DELETE FROM $table WHERE $condition ;";
+        $sql = "DELETE FROM $table WHERE $condition ;";
 
-      $req = $this->db_open()->prepare( $sql );
+        $req = $this->db_open()->prepare($sql);
 
-      return $req->execute( $value_exec );
-  }
+        return $req->execute($value_exec);
+    }
 
 
   /**
@@ -176,11 +169,11 @@ class Database
    *
    * @param  string $table
    */
-  public function db_truncate($table)
-  {
-      $sql = "TRUNCATE TABLE `$table` ";
-      return $this->db_open()->query($sql);
-  }
+    public function db_truncate($table)
+    {
+        $sql = "TRUNCATE TABLE `$table` ";
+        return $this->db_open()->query($sql);
+    }
 
 
   /**
@@ -191,11 +184,11 @@ class Database
    *
    * @return object   Liste des colonnes
    */
-  public function db_showcolumns($table, $class_name)
-  {
-      $sql = "SHOW COLUMNS FROM $table ;";
-      return \Config::GetDb()->db_query( $sql, $class_name);
-  }
+    public function db_showcolumns($table, $class_name)
+    {
+        $sql = "SHOW COLUMNS FROM $table ;";
+        return \Config::GetDb()->db_query($sql, $class_name);
+    }
 
 
   /**
@@ -207,41 +200,42 @@ class Database
    *
    * @return  boolean
    */
-  public function db_update($condition, $set_fields, $table_name)
-  {
-      $sql = "UPDATE `$table_name` SET ";
+    public function db_update($condition, $set_fields, $table_name)
+    {
+        $sql = "UPDATE `$table_name` SET ";
 
-      $fields = '(';
-      $values = 'VALUES (';
+        $fields = '(';
+        $values = 'VALUES (';
 
-      // creation des valeurs
-      foreach ($set_fields as $key => $value)
-      {
-          $sql .= " `$key`=:$key,";
-          $value_exec[':'.$key] = $value;
-      }
+        // creation des valeurs
+        foreach ($set_fields as $key => $value) {
+            // update boolean type with integer
+            if (gettype($value) === 'boolean') {
+                if($value) { $value = 1; } else { $value = 0; }
+            }
+            $sql .= " `$key`=:$key,";
+            $value_exec[':'.$key] = $value;
+        }
 
-      // suppression de la dernière virgule
-      $sql = substr($sql,0,strlen($sql)-1);
-      $sql .= " WHERE ";
+        // suppression de la dernière virgule
+        $sql = substr($sql, 0, strlen($sql)-1);
+        $sql .= " WHERE ";
 
-      // creation des conditions (where)
-      foreach ( $condition as $key_id => $value_id )
-      {
-          $value_exec[ ':' . $key_id ] = $value_id;
-          $sql .= " `$key_id`=:$key_id AND";
-      }
+        // creation des conditions (where)
+        foreach ($condition as $key_id => $value_id) {
+            $value_exec[ ':' . $key_id ] = $value_id;
+            $sql .= " `$key_id`=:$key_id AND";
+        }
 
-      // suppression de la dernière virgule
-      $sql = substr( $sql, 0, strlen($sql)-3 );
+        // suppression de la dernière virgule
+        $sql = substr($sql, 0, strlen($sql)-3);
 
-      // envoi de la requete préparé
-      $req = $this->db_open()->prepare( $sql );
+        // envoi de la requete préparé
+        $req = $this->db_open()->prepare($sql);
 
-      // execution de la requete
-      $req->execute( $value_exec );
+        // execution de la requete
+        $req->execute($value_exec);
 
-      return $req;
-  }
-
-} // end class
+        return $req;
+    }
+}
