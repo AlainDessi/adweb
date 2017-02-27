@@ -174,4 +174,13 @@ class Config
         }
         return self::$emailconfig;
     }
+
+    /**
+     * Return True si mode developper
+     * @return boolean
+     */
+    public static function isDevMode() {
+        return self::get('dev');
+    }
+
 }
