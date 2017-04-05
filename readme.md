@@ -1,2 +1,5 @@
-### Composants de mon petit php framework ###
-voir Buscobon a little php framework inspiré par Laravel ... bientôt disponible
+### Composants de mon petit framework PHP ###
+Composants utilisés par [Buscobon](https://github.com/AlainDessi/Buscobon)
+
+## License ##
+Distribué sous la [licence MIT](https://opensource.org/licenses/MIT).
