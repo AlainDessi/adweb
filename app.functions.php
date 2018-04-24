@@ -3,10 +3,8 @@
  * Fonction utiles pour le framework
  * BUSCOBON - PHP FRAMEWORK
  *
- * PHP version 5.4.39-0
- *
  * @author      DESSI Alain <alain.dessi@laposte.net>
- * @copyright   2015 Dessi Alain
+ * @copyright   2016 Dessi Alain
  * @link    http://www.alain-dessi.com
  */
 
@@ -66,9 +64,9 @@ function route($alias, $arguments = null)
  */
 function view($alias, $args = null)
 {
-    $url = str_replace('.', '/', $alias);
+    $path = str_replace('.', '/', $alias);
     $controller = new Core\Http\Controller();
-    return $controller->renderTemplate($url, $args);
+    return $controller->renderTemplate($path, $args);
 }
 
 /**

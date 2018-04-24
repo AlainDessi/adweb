@@ -4,12 +4,12 @@
  * Initialisation des modules de démarrage
  *
  * @author      DESSI Alain <alain.dessi@laposte.net>
- * @copyright   2016 Dessi Alain
+ * @copyright   2016-2017 Dessi Alain
  * @link        http://www.alain-dessi.com
  */
 
 // version et release
-define('VERSION', 'V0.6.2 Beta');
+define('VERSION', 'V0.6.3');
 
 // Set Time Zone
 date_default_timezone_set('Europe/Paris');

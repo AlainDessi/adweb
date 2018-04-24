@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * BUSCOBON - PHP FRAMEWORK
  *
@@ -13,7 +11,7 @@
  */
 
 // création du fichier de log si n'existe pas
-Core\Services\Files::CreateDir( ROOT_DIR . '/temp/logs');
+Core\Services\Files::createDir(ROOT_DIR . '/temp/logs');
 
 // Enregistrer les erreurs dans un fichier de log
 ini_set('log_errors', true);
