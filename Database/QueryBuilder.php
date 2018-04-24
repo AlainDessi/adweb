@@ -125,7 +125,7 @@ class QueryBuilder
    */
     public function where($field, $operand, $value)
     {
-        $this->conditions[] = '`' . $field . '`' . $operand . '\'' . $value . '\'';
+        $this->conditions[] = $field . $operand . '\'' . $value . '\'';
         return $this;
     }
 
