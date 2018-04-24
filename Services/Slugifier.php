@@ -153,6 +153,56 @@ class Slugifier
         return $this;
     }
 
+    public function getSlug($string)
+    {
+        $this->text_to_transform = $string;
+
+        $this->transformToSlug();
+
+        return $this->slug;
+
+    }
+
+    private function transformToSlug()
+    {
+        $string = $this->text_to_transform;
+
+        // Make sure string is in UTF-8 and strip invalid UTF-8 characters
+        $string = mb_convert_encoding((string) $string, 'UTF-8', mb_list_encodings());
+
+        // Make custom replacements
+        $string = preg_replace(array_keys($this->replacements), $this->replacements, $string);
+
+        // Transliterate characters to ASCII
+        if ($this->transliterate) {
+            $string = str_replace(array_keys($this->charMap), $this->charMap, $string);
+        }
+
+        // Replace non-alphanumeric characters with our delimiter
+        $string = preg_replace('/[^\p{L}\p{Nd}]+/u', $this->delimiter, $string);
+
+        // Remove duplicate delimiters
+        $string = preg_replace('/(' . preg_quote($this->delimiter, '/') . '){2,}/', '$1', $string);
+
+        // Truncate slug to max. characters
+        if ($this->limit) {
+            $string = mb_substr($string, 0, $this->limit, 'UTF-8');
+        }
+
+        // Remove delimiter from ends
+        $string = trim($string, $this->delimiter);
+
+        // lowercase
+        if($this->lowercase)
+        {
+            $string = mb_strtolower($string, 'UTF-8');
+        }
+
+        $this->slug = $string;
+
+    }
+
+
     public function __toString()
     {
 
