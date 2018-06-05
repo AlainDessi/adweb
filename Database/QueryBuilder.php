@@ -44,6 +44,12 @@ class QueryBuilder
      */
     private $order;
 
+    /**
+     * group by
+     * @var array
+     */
+    private $group_by;
+
    /**
     * champs modifiable
     * @var array
@@ -140,6 +146,12 @@ class QueryBuilder
         return $this;
     }
 
+    public function groupby($value)
+    {
+        $this->group_by[] = $value;
+        return $this;
+    }
+
   /**
    * Ajout de leftjoin
    * @param  string $table
@@ -211,6 +223,12 @@ class QueryBuilder
             $order = ' ORDER BY ' . implode(',', $this->order);
         }
 
+        /* Traitement du group by */
+        $groupby = '';
+        if(!empty($this->group_by)) {
+            $groupby = ' GROUP BY ' . implode(',', $this->group_by);
+        }
+
         /* Traitement LIMIT */
         $limit = '';
         if (!empty($this->limit)) {
@@ -224,7 +242,7 @@ class QueryBuilder
         }
 
         /* création de la requete */
-        $sql = $select . $from . $joins . $where . $order . $limit . $offset;
+        $sql = $select . $from . $joins . $where . $groupby . $order . $limit . $offset;
 
         return $sql;
     }
