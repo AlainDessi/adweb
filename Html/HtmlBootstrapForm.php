@@ -100,6 +100,13 @@ class HtmlBootstrapForm extends Html
       return $this;
   }
 
+  public function number($label,$name)
+  {
+      $this->input($label,$name,'number');
+      return $this;
+  }
+
+
   /**
    * Input type Hidden
    *

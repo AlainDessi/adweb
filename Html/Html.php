@@ -145,7 +145,7 @@ class Html
                 $this->closetag = " checked>";
             }
         } else {
-            if (!empty($value)) {
+            if (!empty($value) || $value == 0) {
                 $this->setAttribute('value', $value);
             }
         }
