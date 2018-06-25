@@ -118,6 +118,12 @@ class Html
         return $this;
     }
 
+    public function addAttribute($attributeName, $value)
+    {
+        $this->setAttribute($attributeName, $value);
+        return $this;
+    }
+
     public function addTitle($title)
     {
         $this->setAttribute('title', $title);
