@@ -134,16 +134,26 @@ class QueryBuilder
         $this->conditions[] = $field . ' ' . $operand . ' \'' . $value . '\'';
         return $this;
     }
+
     /**
      * Ajout des conditions WHERE col is null
      * @param  string $field
-     * @param  string $operand
-     * @param  string $value
      * @return instance
      */
     public function whereIsNull($field)
     {
         $this->conditions[] = $field . ' is null';
+        return $this;
+    }
+
+    /**
+     * Ajout des conditions WHERE col is not null
+     * @param  string $field
+     * @return instance
+     */
+    public function whereIsNotNull($field)
+    {
+        $this->conditions[] = $field . ' is not null';
         return $this;
     }
 
