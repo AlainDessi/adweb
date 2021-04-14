@@ -1,6 +1,8 @@
 <?php
 
-class SlugifierTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SlugifierTest extends TestCase
 {
 
   public function testFrenchSlug()

@@ -1,11 +1,12 @@
 <?php
+use PHPUnit\Framework\TestCase;
 
-class FilesTest extends PHPUnit_Framework_TestCase
+class FilesTest extends TestCase
 {
     public function testFileInreadDir()
     {
         $files = \Core\Services\Files::readDir(__DIR__ . '/testfiles/');
-        $this->assertArraySubset(['0' => '/home/alain/development/adweb/tests/testfiles/test.txt'], $files);
+        $this->assertArraySubset(['0' => __DIR__ . '/testfiles/test.txt'], $files);
     }
 
     public function testCreateDirectory()

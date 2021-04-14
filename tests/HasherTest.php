@@ -1,6 +1,8 @@
 <?php
 
-class HasherTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HasherTest extends TestCase
 {
     public function testIsCheckWithGoodPassword()
     {

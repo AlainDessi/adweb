@@ -1,6 +1,8 @@
 <?php
 
-class HtmlBootstrapFormTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HtmlBootstrapFormTest extends TestCase
 {
     public function testHidden()
     {

@@ -131,7 +131,11 @@ class QueryBuilder
    */
     public function where($field, $operand, $value)
     {
-        $this->conditions[] = $field . ' ' . $operand . ' \'' . $value . '\'';
+        if (strtoupper($operand) === 'IN') {
+            $this->conditions[] = $field . ' ' . $operand . ' ' . $value;
+        } else {
+            $this->conditions[] = $field . ' ' . $operand . ' \'' . $value . '\'';
+        }
         return $this;
     }
 

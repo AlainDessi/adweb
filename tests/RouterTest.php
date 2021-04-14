@@ -1,6 +1,8 @@
 <?php
 
-class RouterTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class RouterTest extends TestCase
 {
     public function testRouteGet()
     {
