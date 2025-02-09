@@ -5,9 +5,9 @@ namespace Core\Console;
 class Routes extends console
 {
 
-    private $lencell       = 40;
+    private $lencell       = 50;
     private $lencellmethod = 8;
-    private $lencellalias  = 30;
+    private $lencellalias  = 60;
 
     /**
      * Execute la commande d'affichage des routes de l'application
