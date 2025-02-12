@@ -441,4 +441,13 @@ class QueryBuilder
     {
         return $this->fillable;
     }
+
+	/**
+	 * Permet de faire une requete MySql
+	 * @param  string $requestMySql Requete de type SQL
+	 */
+	 public function query($requestMySql)
+	 {
+		  return Config::GetDb()->db_query($requestMySql, $this->model);
+	 }
 }
