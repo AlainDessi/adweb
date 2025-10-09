@@ -50,17 +50,17 @@ class QueryBuilder
      */
     private $group_by;
 
-   /**
-    * champs modifiable
-    * @var array
-    */
+    /**
+     * champs modifiable
+     * @var array
+     */
     private $fillable;
 
     /**
      * Champs à slugifier
      * @var array
      */
-    private $slugs=array();
+    private $slugs = array();
 
     /**
      * Limit
@@ -94,21 +94,21 @@ class QueryBuilder
         $this->slugs = $slugs;
     }
 
-  /**
-   * Methode magique
-   * Retourne la requete sql
-   * @return string
-   */
+    /**
+     * Methode magique
+     * Retourne la requete sql
+     * @return string
+     */
     public function __toString()
     {
         return $this->builder();
     }
 
- /**
-  * Ajout de Select
-  * @param  array $fields
-  * @return instance
-  */
+    /**
+     * Ajout de Select
+     * @param  array $fields
+     * @return instance
+     */
     public function select($fields)
     {
         if (gettype($fields) === 'array') {
@@ -122,13 +122,13 @@ class QueryBuilder
     }
 
 
-  /**
-   * Ajout des conditions WHERE
-   * @param  string $field
-   * @param  string $operand
-   * @param  string $value
-   * @return instance
-   */
+    /**
+     * Ajout des conditions WHERE
+     * @param  string $field
+     * @param  string $operand
+     * @param  string $value
+     * @return instance
+     */
     public function where($field, $operand, $value)
     {
         if (strtoupper($operand) === 'IN') {
@@ -161,11 +161,11 @@ class QueryBuilder
         return $this;
     }
 
-  /**
-   * Ajout de FROM
-   * @param  string $table
-   * @return instance
-   */
+    /**
+     * Ajout de FROM
+     * @param  string $table
+     * @return instance
+     */
     public function from($table)
     {
         $this->table = $table;
@@ -178,35 +178,35 @@ class QueryBuilder
         return $this;
     }
 
-  /**
-   * Ajout de leftjoin
-   * @param  string $table
-   * @param  string $on    conditions
-   * @return instance
-   */
+    /**
+     * Ajout de leftjoin
+     * @param  string $table
+     * @param  string $on    conditions
+     * @return instance
+     */
     public function leftjoin($table, $on)
     {
         $this->left_join[] = ' LEFT JOIN ' . $table . ' ON ' . $on;
         return $this;
     }
 
-  /**
-   * Ajout de join
-   * @param  string $table
-   * @param  string $on    conditions
-   * @return instance
-   */
+    /**
+     * Ajout de join
+     * @param  string $table
+     * @param  string $on    conditions
+     * @return instance
+     */
     public function join($table, $on)
     {
         $this->left_join[] = ' JOIN ' . $table . ' ON ' . $on;
         return $this;
     }
 
-  /**
-   * Ajout de ORDER By
-   * @param  string $order
-   * @return instance
-   */
+    /**
+     * Ajout de ORDER By
+     * @param  string $order
+     * @return instance
+     */
     public function order($order)
     {
         $this->order[] = $order;
@@ -214,10 +214,10 @@ class QueryBuilder
     }
 
 
-  /**
-   * constructeur de la requete SQL
-   * @return string
-   */
+    /**
+     * constructeur de la requete SQL
+     * @return string
+     */
     public function builder()
     {
         /* Traitement de SELECT */
@@ -251,7 +251,7 @@ class QueryBuilder
 
         /* Traitement du group by */
         $groupby = '';
-        if(!empty($this->group_by)) {
+        if (!empty($this->group_by)) {
             $groupby = ' GROUP BY ' . implode(',', $this->group_by);
         }
 
@@ -273,11 +273,11 @@ class QueryBuilder
         return $sql;
     }
 
-  /**
-   * Retourne l'enregistrement suivant son id
-   * @param  int $id
-   * @return object
-   */
+    /**
+     * Retourne l'enregistrement suivant son id
+     * @param  int $id
+     * @return object
+     */
     public function find($id)
     {
         $this->where('id', '=', $id);
@@ -285,20 +285,20 @@ class QueryBuilder
     }
 
 
-  /**
-   * Retourne tout les enregistrement de la table
-   * @return array
-   */
+    /**
+     * Retourne tout les enregistrement de la table
+     * @return array
+     */
     public function all()
     {
         return $this->get();
     }
 
-  /**
-   * Identique à All mais permet d'ajouter le nombre de resultat
-   * @param  int $nblines Nombre de ligne retourné
-   * @return array
-   */
+    /**
+     * Identique à All mais permet d'ajouter le nombre de resultat
+     * @param  int $nblines Nombre de ligne retourné
+     * @return array
+     */
     public function get($nblines = null)
     {
         $sql = $this->builder();
@@ -310,51 +310,51 @@ class QueryBuilder
         return Config::GetDb()->db_query($sql, $this->model);
     }
 
-  /**
-   * retourne le premier enregistrement trouvé
-   * @return $this
-   */
+    /**
+     * retourne le premier enregistrement trouvé
+     * @return $this
+     */
     public function first()
     {
         $sql = $this->builder() . ' LIMIT 1';
         return Config::GetDb()->db_query($sql, $this->model, true);
     }
 
-  /**
-   * LIMIT QUERY SQL
-   * @param  [type] $limit [description]
-   * @return instance
-   */
+    /**
+     * LIMIT QUERY SQL
+     * @param  [type] $limit [description]
+     * @return instance
+     */
     public function limit($limit)
     {
         $this->limit = $limit;
         return $this;
     }
 
-  /**
-   * OFFSET QUERY SQL
-   * @param int $offest
-   */
+    /**
+     * OFFSET QUERY SQL
+     * @param int $offest
+     */
     public function offset($offset)
     {
         $this->offset = $offset;
         return $this;
     }
 
-  /**
-   * Set model name
-   * @param string $model_name
-   */
+    /**
+     * Set model name
+     * @param string $model_name
+     */
     public function setModel($model_name)
     {
         $this->model = $model_name;
         return $this;
     }
 
-  /**
-   * Insertion d'une ligne dans une table
-   * @param  array $fields
-   */
+    /**
+     * Insertion d'une ligne dans une table
+     * @param  array $fields
+     */
     public function insert($fields)
     {
         // Ajout automatique de la date de modification
@@ -366,12 +366,12 @@ class QueryBuilder
         return Config::GetDb()->db_insert($this->table, $fields);
     }
 
-/**
- * Update table
- * @param  array $fields
- * @param  mixed $id ( soit l'id, soit un array avec la condition )
- * @return Boolean
- */
+    /**
+     * Update table
+     * @param  array $fields
+     * @param  mixed $id ( soit l'id, soit un array avec la condition )
+     * @return Boolean
+     */
     public function update($fields, $id)
     {
         // Ajout automatique de la date de modification
@@ -381,21 +381,21 @@ class QueryBuilder
         $fields = $this->getFillandSlug($fields);
 
         if (!empty($fields)) {
-        // soit plusieurs conditions soit l'id seulement
+            // soit plusieurs conditions soit l'id seulement
             if (is_array($id)) {
                 return Config::GetDb()->db_update($id, $fields, $this->table);
             } else {
-                return Config::GetDb()->db_update([ 'id' => $id ], $fields, $this->table);
+                return Config::GetDb()->db_update(['id' => $id], $fields, $this->table);
             }
         } else {
             throw new DatabaseException("Aucun champs à mettre à jour, vérifier les champs fillable dans le Model");
         }
     }
 
-  /**
-   * Effacement d'une ligne de table
-   * @param  mixed(array or int) $id
-   */
+    /**
+     * Effacement d'une ligne de table
+     * @param  mixed(array or int) $id
+     */
     public function delete($id)
     {
         if (is_array($id)) {
@@ -405,17 +405,17 @@ class QueryBuilder
         }
     }
 
-  /**
-   * Vérification des champs modifiable et
-   * Slugification des champs à slugifier
-   * @param  array $fields
-   * @return array
-   */
+    /**
+     * Vérification des champs modifiable et
+     * Slugification des champs à slugifier
+     * @param  array $fields
+     * @return array
+     */
     private function getFillandSlug($fields)
     {
         // verification des champs modifiable
         foreach ($fields as $key => $value) {
-        // unset not fillable
+            // unset not fillable
             if (!in_array($key, $this->fillable)) {
                 unset($fields[$key]);
             }
@@ -442,12 +442,42 @@ class QueryBuilder
         return $this->fillable;
     }
 
-	/**
-	 * Permet de faire une requete MySql
-	 * @param  string $requestMySql Requete de type SQL
-	 */
-	 public function query($requestMySql)
-	 {
-		  return Config::GetDb()->db_query($requestMySql, $this->model);
-	 }
+    /**
+     * Permet de faire une requete MySql
+     * @param  string $requestMySql Requete de type SQL
+     */
+    public function query($requestMySql)
+    {
+        return Config::GetDb()->db_query($requestMySql, $this->model);
+    }
+
+    public function whereBetween(string $column, $from, $to)
+    {
+        return $this->where($column, '>=', $from)
+            ->where($column, '<=', $to);
+    }
+
+    public function whereNotEmpty(string $column)
+    {
+        return $this->whereIsNotNull($column)
+            ->where($column, '<>', '');
+    }
+
+    public function whereRaw(string $expression)
+    {
+        $this->conditions[] = $expression;
+        return $this;
+    }
+
+    public function whereIn(string $column, array $values)
+    {
+        if (empty($values)) {
+            return $this->where('1', '=', '0'); // 1 = '0'
+        }
+        $vals = array_map(function ($v) {
+            return "'" . str_replace("'", "''", (string)$v) . "'";
+        }, $values);
+        $list = '(' . implode(',', $vals) . ')';
+        return $this->where($column, 'IN', $list);
+    }
 }
