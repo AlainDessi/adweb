@@ -1,0 +1,21 @@
+parameters:
+  phpVersion: 80400
+
+  # On scanne la racine du projet (là où sont tes classes mappées sur "")
+  paths:
+    - .
+
+  # On évite les dossiers inutiles
+  excludePaths:
+    - vendor
+    - tests
+    - bin
+    - node_modules
+    - .git
+
+  # Niveau de rigueur modéré pour commencer (0..9)
+  level: 5
+
+  # Optionnel mais pratique si tu as beaucoup de fichiers
+  fileExtensions:
+    - php

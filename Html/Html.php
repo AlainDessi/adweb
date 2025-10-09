@@ -5,31 +5,22 @@ namespace Core\Html;
 class Html
 {
 
-  /**
-   * Attributes ( class, id, name )
-   * @var array
-   */
+    /**
+     * Attributes ( class, id, name )
+     * @var array
+     */
     protected $attributes = [];
-
     protected $prefix;
-
     protected $suffix;
-
     protected $tag;
-
     protected $opentag;
-
     protected $closetag;
-
     protected $icons;
 
     /**
      * Constructeur
      */
-    public function __construct()
-    {
-
-    }
+    public function __construct() {}
 
     /**
      * Create html
@@ -41,7 +32,7 @@ class Html
         if (!empty($this->prefix)) {
             $html = $this->prefix;
         } else {
-            $html ='';
+            $html = '';
         }
 
         $html .= $this->opentag . $this->tag;
@@ -91,7 +82,7 @@ class Html
         $attributes = '';
 
         foreach ($this->attributes as $key => $value) {
-            $attributes .= ' ' . $key . '="' . $value .'"';
+            $attributes .= ' ' . $key . '="' . $value . '"';
         }
 
         return $attributes;

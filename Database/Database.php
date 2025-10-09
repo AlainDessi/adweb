@@ -22,7 +22,6 @@ class Database
     private $db_pass;
     private $db_name;
     private $db_charset;
-
     private $link_db;
 
 

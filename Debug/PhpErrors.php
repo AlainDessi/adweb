@@ -7,21 +7,16 @@ class PhpErrors extends Errors
 
   public function __construct($e)
   {
-
-
-
     $this->message = $e[1];
     $this->code = $e[0];
     $this->file = $e[2];
     $this->line = $e[3];
-    $this->content = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
-
+    $this->setContent(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2));
     $this->error = "[ " . $this->getStrCode() . " ]";
   }
 
   public function getStrCode()
   {
-
     switch ($this->code) {
 
       case E_USER_ERROR:    return "E_USER_ERROR";
@@ -39,7 +34,5 @@ class PhpErrors extends Errors
       default:              return "UNKNOW ERROR";
                             break;
     }
-
   }
-
-} // end class
+}

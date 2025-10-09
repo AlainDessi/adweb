@@ -2,41 +2,14 @@
 
 namespace Core\Debug;
 
-use Core\Config;
-
-Class Errors
+class Errors
 {
-
-  /**
-   * message d'erreur
-   * @var string
-   */
-  protected $message;
-
-  /**
-   * Détail de l'erreur
-   * @var string
-   */
-  protected $content;
-
-  /**
-   * Fichier d'où provient l'erreur
-   * @var string
-   */
-  protected $file;
-
-  /**
-   * Ligne d'où provient l'erreur
-   * @var string
-   */
-  protected $line;
-
-  /**
-   * Nom de l'erreur
-   * @var String
-   */
-  protected $error;
-
+  protected string $message;
+  protected string|array $content;
+  protected string $file;
+  protected string $line;
+  protected string $error;
+  protected string $code;
 
   /**
    * Affiche l'erreur
@@ -48,5 +21,13 @@ Class Errors
     die();
   }
 
+  public function setContent(string|array $content): void
+  {
+    $this->content = $content;
+  }
 
-} // end class
+  public function getContent(): string
+  {
+    return is_string($this->content) ? $this->content : print_r($this->content, true);
+  }
+}

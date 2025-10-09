@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Fonction utiles pour le framework
  * BUSCOBON - PHP FRAMEWORK
@@ -37,11 +38,11 @@ function route($alias, $arguments = null)
     }
 
     // ajoute les arguments à l'url
-    if (gettype($arguments) === 'string') {
-        $url = preg_replace('#:[a-z]+#', $arguments, $url);
-    } elseif (gettype($arguments) === 'array') {
+    if (gettype($arguments) === 'string' || gettype($arguments) === 'integer') {
+        $url = preg_replace('#:(?:[A-Za-z_][A-Za-z0-9_]*)#', rawurlencode((string)$arguments), $url, 1);
+    } elseif (is_array($arguments)) {
         foreach ($arguments as $value) {
-            $url = preg_replace('#:[a-z]+#', $value, $url, 1);
+            $url = preg_replace('#:(?:[A-Za-z_][A-Za-z0-9_]*)#', rawurlencode((string)$value), $url, 1);
         }
     }
 
@@ -94,12 +95,12 @@ function UniqFileName($filename)
     return $newfilename;
 }
 
-  /**
-   * Envoi d'un mail ( utilise phpmailer )
-   *
-   * @param string $subject
-   * @param string $body
-   */
+/**
+ * Envoi d'un mail ( utilise phpmailer )
+ *
+ * @param string $subject
+ * @param string $body
+ */
 function SendMail($subject, $body)
 {
     // initialisation du mail
@@ -111,13 +112,13 @@ function SendMail($subject, $body)
     return $mail->send();
 }
 
-  /**
-   * Récupére et renvoi un modele de mail
-   *
-   * @param  string $filename
-   * @param  array $data
-   * @return string
-   */
+/**
+ * Récupére et renvoi un modele de mail
+ *
+ * @param  string $filename
+ * @param  array $data
+ * @return string
+ */
 function getMailBody($filename, $data)
 {
     extract($data);
@@ -202,4 +203,18 @@ function getRoutes()
     require __DIR__ . '/tests/routes.php';
     $test = Routes::getRoutes();
     var_dump($test);
+}
+
+// Helper pour versionner les URL's
+if (!function_exists('assetv')) {
+    function assetv(string $path): string {
+        $base = defined('ROOTURL') ? rtrim(ROOTURL, '/') : '';
+        $path = '/' . ltrim($path, '/');
+        $ver = \Core\Config::get('app.version') ?? 'dev';
+        $full = ROOT_DIR . '/public' . $path;
+        $mtime = is_file($full) ? (string)filemtime($full) : '';
+        $qs = $ver . ($mtime ? '.' . dechex((int)$mtime) : '');
+
+        return $base . $path . '?v=' . rawurlencode($qs);
+    }
 }

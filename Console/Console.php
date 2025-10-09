@@ -3,33 +3,21 @@
 namespace Core\Console;
 
 use Core\Http\Router;
+use Core\Console\Color;
 
 class Console
 {
-    /**
-     * Arguments passé sur la console
-     * @var array
-     */
-    protected $args;
 
-    /**
-     * Liste des commandes
-     * @var array
-     */
-    protected $commandList = [
-                          'migrate',
-                          'seeder',
-                          'routes',
-                          'make',
-                          'help'
-                        ];
-
-    /**
-     * Instance de couleur
-     * @var instance
-     */
-    protected $color;
-
+    protected array $args;
+    protected array $commandList = [
+        'migrate',
+        'seeder',
+        'routes',
+        'make',
+        'help'
+    ];
+    protected Color $instanceColor;
+    protected string $command;
     public function __construct($args)
     {
         $this->args = $args;
@@ -56,7 +44,6 @@ class Console
             // execute la class correspondate à la fonctions
             $exec = new $this->command($this->args);
             $exec->executeCommand();
-
         } else {
             error('aucune commande à executer');
         }
@@ -77,7 +64,7 @@ class Console
      */
     private function chkCommand()
     {
-        for ($i=1; $i <= count($this->args); $i++) {
+        for ($i = 1; $i <= count($this->args); $i++) {
             if (in_array($this->args[$i], $this->commandList)) {
                 $this->command = '\Core\Console\\' . ucfirst($this->args[$i]);
                 unset($this->args[$i]);

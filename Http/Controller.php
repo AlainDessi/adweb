@@ -1,140 +1,116 @@
 <?php
+declare(strict_types=1);
 
 namespace Core\Http;
 
 use Core\Config;
-use Philo\Blade\Blade;
-use Core\Http\Request;
+use Jenssegers\Blade\Blade;
+use Illuminate\Container\Container;
+use Illuminate\Support\Facades\Facade;
 
 class Controller
 {
-    /**
-     * Chemin des vues de l'application
-     * @var string
-     */
-    private $path_views;
+    private string $path_views;
+    private string $path_cache;
 
-    /**
-     * Chemin du cache de l'application
-     * @var string
-     */
-    private $path_cache;
+    /** Instance Blade unique réutilisée pour tout le process */
+    private static ?Blade $blade = null;
 
-    /**
-     * Constructeur
-     * @param string $viewsDir
-     * @param string $cacheDir
-     */
-    public function __construct($viewsDir = null, $cacheDir = null)
+    public function __construct(?string $viewsDir = null, ?string $cacheDir = null)
     {
-        if (is_null($viewsDir)) {
-            $this->path_views = VIEWS_DIR;
-        } else {
-            $this->path_views = $viewsDir;
-        }
+        $this->path_views = $viewsDir ?? VIEWS_DIR;
+        $this->path_cache = $cacheDir ?? CACHE_DIR; // (fix: plus d’erreur d’affectation)
 
-        if (is_null($cacheDir)) {
-            $this->path_cache = CACHE_DIR;
-        } else {
-            $this->path_views = $cacheDir;
+        if (!is_dir($this->path_cache)) {
+            @mkdir($this->path_cache, 0o775, true);
         }
     }
 
-    /**
-     * Génerateur de page PHP
-     * @param  string  $page
-     * @param  array   $data
-     */
-    public function render($page, $data = null)
+    /** Retourne l’unique instance Blade configurée sur tes chemins */
+    private function blade(): Blade
     {
-        if ($data != null) {
-            extract($data);
+        if (self::$blade === null) {
+            self::$blade = new Blade($this->path_views, $this->path_cache);
         }
-        include($this->path_views . $page . '.php');
+        return self::$blade;
     }
 
-    /**
-     * Rendu de vue avec le moteur Laravel/Blade
-     * @param  string  $page
-     * @param  array   $data
-     */
-    public function renderBlade($page, $data = null)
+    /** Données partagées disponibles dans toutes les vues */
+    protected function sharedViewData(): array
     {
-        $blade = new Blade($this->path_views, $this->path_cache);
-        if (is_null($data)) {
-            echo $blade->view()->make($page)->render();
-        } else {
-            echo $blade->view()->make($page, $data)->render();
-        }
-    }
-
-    /**
-     * Rendu de page avec le moteur TWIG
-     * @method renderTwig
-     * @param  string     $page
-     * @param  array      $data
-     */
-    public function renderTwig($page, $data = null)
-    {
-        // modification du nom du template pour twig
-        $page = $page . '.twig';
-        $loader = new \Twig_Loader_Filesystem($this->path_views);
-        $twig   = new \Twig_Environment($loader, array(
-            'cache'         => $this->path_cache,
-            'debug'         => \Core\Config::get('twig.debug'),
-            'auto_reload'   => \Core\Config::get('twig.auto_reload')
-        ));
-
-        // Création de données pour twig
-        $add_data = [
+        return [
             'session' => [
-                'hasmsg'    => \Session::hasMsg(),
-                'msg'       => \Session::printMsg()
-            ]
+                'hasmsg' => \Session::hasMsg(),
+                'msg'    => \Session::printMsg(),
+            ],
         ];
-
-        // ajout des données de session pour twig
-        if (is_null($data)) {
-            $data = $add_data;
-        } else {
-            array_merge($data, $add_data);
-        }
-
-        // affichage de la page
-        echo $twig->render($page, $data);
     }
 
     /**
-     * Rendu de page html
-     * @method renderTemplate
-     * @param  string         $page
-     * @param  array          $data
+     * Rendu Blade (Jenssegers).
+     * On bascule le container Illuminate sur celui de Blade le temps du rendu,
+     * pour que app('blade.compiler') et les Facades résolvent correctement.
      */
-    public function renderTemplate($page, $data = null)
+    public function renderBlade(string $page, ?array $data = null): void
     {
-        $typeRender = \Core\Config::get('render');
+        $blade = $this->blade();
+        $data  = array_merge($this->sharedViewData(), $data ?? []);
 
-        if (empty($typeRender) || $typeRender === 'blade') {
-            $this->renderBlade($page, $data);
-        } elseif (\Core\Config::get('render') === 'twig') {
-            $this->renderTwig($page, $data);
-        } elseif (\Core\Config::get('render') === 'php') {
+        // Sauvegarde l’état courant
+        $bladeContainer    = $blade->getContainer();
+        $prevContainer     = Container::getInstance();
+        $prevFacadeApp     = method_exists(Facade::class, 'getFacadeApplication')
+                             ? Facade::getFacadeApplication()
+                             : null;
+
+        // Bascule sur le container de Blade
+        Container::setInstance($bladeContainer);
+        if (method_exists(Facade::class, 'setFacadeApplication')) {
+            Facade::setFacadeApplication($bladeContainer);
+        }
+
+        try {
+            echo $blade->make($page, $data)->render();
+        } finally {
+            // Restaure le container/facades d’avant
+            if ($prevContainer) {
+                Container::setInstance($prevContainer);
+            }
+            if (method_exists(Facade::class, 'setFacadeApplication')) {
+                Facade::setFacadeApplication($prevFacadeApp);
+            }
+        }
+    }
+
+    /** Rendu PHP “vanilla” */
+    public function render(string $page, ?array $data = null): void
+    {
+        if ($data) { extract($data, EXTR_SKIP); }
+        include $this->path_views . $page . '.php';
+    }
+
+    /**
+     * Sélecteur de moteur.
+     * Par défaut: Blade. (Twig retiré)
+     */
+    public function renderTemplate(string $page, ?array $data = null): void
+    {
+        $type = (string) (Config::get('render') ?? 'blade');
+
+        if ($type === 'php') {
             $this->render($page, $data);
+        } else { // 'blade' par défaut
+            $this->renderBlade($page, $data);
         }
     }
 
-    /**
-     * Http Accept control Cors
-     * @return [type] [description]
-     */
-    public function cors()
+    /** CORS utilitaire */
+    public function cors(): void
     {
-        // définition des domaines autorisée à recevoir les données
         header("Access-Control-Allow-Origin: *");
         header('Access-Control-Allow-Credentials: true');
 
-        // Access-Control headers are received during OPTIONS requests
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
                 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
             }
