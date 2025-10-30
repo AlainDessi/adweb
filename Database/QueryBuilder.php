@@ -8,78 +8,27 @@ use Core\Config;
 class QueryBuilder
 {
 
-    /**
-     * Nom de la classe Model
-     * @var string
-     */
-    private $model;
+    private array $having = [];
+    private ?string $model = null;
+    private array $fields = [];
+    private array $conditions = [];
+    private ?string $table = null;
+    private array $joins = [];
+    private array $order = [];
+    private array $groupBy = [];
+    private array $fillable = [];
+    private array $slugs = [];
+    private ?int $limit = null;
+    private ?int $offset = null;
+    private bool $distinct = false;
 
-    /**
-     * tableau des selects
-     * @var array
-     */
-    private $fields = array();
-
-    /**
-     * tableau des wheres
-     * @var array
-     */
-    private $conditions = array();
-
-    /**
-     * tableaux du from
-     * @var string
-     */
-    private $table;
-
-    /**
-     * left join
-     * @var [type]
-     */
-    private $left_join;
-
-    /**
-     * order array
-     * @var array
-     */
-    private $order;
-
-    /**
-     * group by
-     * @var array
-     */
-    private $group_by;
-
-   /**
-    * champs modifiable
-    * @var array
-    */
-    private $fillable;
-
-    /**
-     * Champs à slugifier
-     * @var array
-     */
-    private $slugs=array();
-
-    /**
-     * Limit
-     * @var int
-     */
-    private $limit;
-
-    /**
-     * Offset
-     * @var int
-     */
-    private $offset;
 
     /**
      * Constructeur
      * @method __construct
      * @param  array       $fillable
      */
-    public function __construct($fillable = array())
+    public function __construct(array $fillable = [])
     {
         $this->fillable = $fillable;
     }
@@ -94,22 +43,22 @@ class QueryBuilder
         $this->slugs = $slugs;
     }
 
-  /**
-   * Methode magique
-   * Retourne la requete sql
-   * @return string
-   */
+    /**
+     * Methode magique
+     * Retourne la requete sql
+     * @return string
+     */
     public function __toString()
     {
         return $this->builder();
     }
 
- /**
-  * Ajout de Select
-  * @param  array $fields
-  * @return instance
-  */
-    public function select($fields)
+    /**
+     * Ajout de Select
+     * @param  array $fields
+     * @return instance
+     */
+    public function select($fields): self
     {
         if (gettype($fields) === 'array') {
             foreach ($fields as $field) {
@@ -122,14 +71,14 @@ class QueryBuilder
     }
 
 
-  /**
-   * Ajout des conditions WHERE
-   * @param  string $field
-   * @param  string $operand
-   * @param  string $value
-   * @return instance
-   */
-    public function where($field, $operand, $value)
+    /**
+     * Ajout des conditions WHERE
+     * @param  string $field
+     * @param  string $operand
+     * @param  string $value
+     * @return instance
+     */
+    public function where($field, $operand, $value): self
     {
         if (strtoupper($operand) === 'IN') {
             $this->conditions[] = $field . ' ' . $operand . ' ' . $value;
@@ -144,7 +93,7 @@ class QueryBuilder
      * @param  string $field
      * @return instance
      */
-    public function whereIsNull($field)
+    public function whereIsNull($field): self
     {
         $this->conditions[] = $field . ' is null';
         return $this;
@@ -155,73 +104,73 @@ class QueryBuilder
      * @param  string $field
      * @return instance
      */
-    public function whereIsNotNull($field)
+    public function whereIsNotNull($field): self
     {
         $this->conditions[] = $field . ' is not null';
         return $this;
     }
 
-  /**
-   * Ajout de FROM
-   * @param  string $table
-   * @return instance
-   */
-    public function from($table)
+    /**
+     * Ajout de FROM
+     * @param  string $table
+     * @return instance
+     */
+    public function from($table): self
     {
         $this->table = $table;
         return $this;
     }
 
-    public function groupby($value)
+    public function groupby($value): self
     {
-        $this->group_by[] = $value;
+        $this->groupBy[] = $value;
         return $this;
     }
 
-  /**
-   * Ajout de leftjoin
-   * @param  string $table
-   * @param  string $on    conditions
-   * @return instance
-   */
-    public function leftjoin($table, $on)
+    /**
+     * Ajout de leftjoin
+     * @param  string $table
+     * @param  string $on    conditions
+     * @return instance
+     */
+    public function leftjoin($table, $on): self
     {
-        $this->left_join[] = ' LEFT JOIN ' . $table . ' ON ' . $on;
+        $this->joins[] = ' LEFT JOIN ' . $table . ' ON ' . $on;
         return $this;
     }
 
-  /**
-   * Ajout de join
-   * @param  string $table
-   * @param  string $on    conditions
-   * @return instance
-   */
-    public function join($table, $on)
+    /**
+     * Ajout de join
+     * @param  string $table
+     * @param  string $on    conditions
+     * @return instance
+     */
+    public function join($table, $on): self
     {
-        $this->left_join[] = ' JOIN ' . $table . ' ON ' . $on;
+        $this->joins[] = ' JOIN ' . $table . ' ON ' . $on;
         return $this;
     }
 
-  /**
-   * Ajout de ORDER By
-   * @param  string $order
-   * @return instance
-   */
-    public function order($order)
+    /**
+     * Ajout de ORDER By
+     * @param  string $order
+     * @return instance
+     */
+    public function order($order): self
     {
         $this->order[] = $order;
         return $this;
     }
 
 
-  /**
-   * constructeur de la requete SQL
-   * @return string
-   */
-    public function builder()
+    /**
+     * constructeur de la requete SQL
+     * @return string
+     */
+    public function builder(): string
     {
         /* Traitement de SELECT */
-        $select = "SELECT ";
+        $select = "SELECT " . ($this->distinct ? 'DISTINCT ' : '');
         if (empty($this->fields)) {
             $select .= '*';
         } else {
@@ -239,8 +188,8 @@ class QueryBuilder
 
         /* Traitement de JOIN */
         $joins = '';
-        if (!empty($this->left_join)) {
-            $joins = implode(' ', $this->left_join);
+        if (!empty($this->joins)) {
+            $joins = implode(' ', $this->joins);
         }
 
         /* Traitement de ORDER BY */
@@ -251,8 +200,8 @@ class QueryBuilder
 
         /* Traitement du group by */
         $groupby = '';
-        if(!empty($this->group_by)) {
-            $groupby = ' GROUP BY ' . implode(',', $this->group_by);
+        if (!empty($this->groupBy)) {
+            $groupby = ' GROUP BY ' . implode(',', $this->groupBy);
         }
 
         /* Traitement LIMIT */
@@ -267,17 +216,22 @@ class QueryBuilder
             $offset = ' OFFSET ' . $this->offset;
         }
 
+        $having = '';
+        if (!empty($this->having)) {
+            $having = ' HAVING ' . implode(' AND ', $this->having);
+        }
+
         /* création de la requete */
-        $sql = $select . $from . $joins . $where . $groupby . $order . $limit . $offset;
+        $sql = $select . $from . $joins . $where . $groupby . $having . $order . $limit . $offset;
 
         return $sql;
     }
 
-  /**
-   * Retourne l'enregistrement suivant son id
-   * @param  int $id
-   * @return object
-   */
+    /**
+     * Retourne l'enregistrement suivant son id
+     * @param  int $id
+     * @return object
+     */
     public function find($id)
     {
         $this->where('id', '=', $id);
@@ -285,20 +239,20 @@ class QueryBuilder
     }
 
 
-  /**
-   * Retourne tout les enregistrement de la table
-   * @return array
-   */
+    /**
+     * Retourne tout les enregistrement de la table
+     * @return array
+     */
     public function all()
     {
         return $this->get();
     }
 
-  /**
-   * Identique à All mais permet d'ajouter le nombre de resultat
-   * @param  int $nblines Nombre de ligne retourné
-   * @return array
-   */
+    /**
+     * Identique à All mais permet d'ajouter le nombre de resultat
+     * @param  int $nblines Nombre de ligne retourné
+     * @return array
+     */
     public function get($nblines = null)
     {
         $sql = $this->builder();
@@ -310,51 +264,51 @@ class QueryBuilder
         return Config::GetDb()->db_query($sql, $this->model);
     }
 
-  /**
-   * retourne le premier enregistrement trouvé
-   * @return $this
-   */
+    /**
+     * retourne le premier enregistrement trouvé
+     * @return $this
+     */
     public function first()
     {
         $sql = $this->builder() . ' LIMIT 1';
         return Config::GetDb()->db_query($sql, $this->model, true);
     }
 
-  /**
-   * LIMIT QUERY SQL
-   * @param  [type] $limit [description]
-   * @return instance
-   */
+    /**
+     * LIMIT QUERY SQL
+     * @param  [type] $limit [description]
+     * @return instance
+     */
     public function limit($limit)
     {
         $this->limit = $limit;
         return $this;
     }
 
-  /**
-   * OFFSET QUERY SQL
-   * @param int $offest
-   */
-    public function offset($offset)
+    /**
+     * OFFSET QUERY SQL
+     * @param int $offest
+     */
+    public function offset($offset): self
     {
         $this->offset = $offset;
         return $this;
     }
 
-  /**
-   * Set model name
-   * @param string $model_name
-   */
-    public function setModel($model_name)
+    /**
+     * Set model name
+     * @param string $model_name
+     */
+    public function setModel($model_name): self
     {
         $this->model = $model_name;
         return $this;
     }
 
-  /**
-   * Insertion d'une ligne dans une table
-   * @param  array $fields
-   */
+    /**
+     * Insertion d'une ligne dans une table
+     * @param  array $fields
+     */
     public function insert($fields)
     {
         // Ajout automatique de la date de modification
@@ -366,12 +320,12 @@ class QueryBuilder
         return Config::GetDb()->db_insert($this->table, $fields);
     }
 
-/**
- * Update table
- * @param  array $fields
- * @param  mixed $id ( soit l'id, soit un array avec la condition )
- * @return Boolean
- */
+    /**
+     * Update table
+     * @param  array $fields
+     * @param  mixed $id ( soit l'id, soit un array avec la condition )
+     * @return Boolean
+     */
     public function update($fields, $id)
     {
         // Ajout automatique de la date de modification
@@ -381,21 +335,21 @@ class QueryBuilder
         $fields = $this->getFillandSlug($fields);
 
         if (!empty($fields)) {
-        // soit plusieurs conditions soit l'id seulement
+            // soit plusieurs conditions soit l'id seulement
             if (is_array($id)) {
                 return Config::GetDb()->db_update($id, $fields, $this->table);
             } else {
-                return Config::GetDb()->db_update([ 'id' => $id ], $fields, $this->table);
+                return Config::GetDb()->db_update(['id' => $id], $fields, $this->table);
             }
         } else {
             throw new DatabaseException("Aucun champs à mettre à jour, vérifier les champs fillable dans le Model");
         }
     }
 
-  /**
-   * Effacement d'une ligne de table
-   * @param  mixed(array or int) $id
-   */
+    /**
+     * Effacement d'une ligne de table
+     * @param  mixed(array or int) $id
+     */
     public function delete($id)
     {
         if (is_array($id)) {
@@ -405,17 +359,17 @@ class QueryBuilder
         }
     }
 
-  /**
-   * Vérification des champs modifiable et
-   * Slugification des champs à slugifier
-   * @param  array $fields
-   * @return array
-   */
+    /**
+     * Vérification des champs modifiable et
+     * Slugification des champs à slugifier
+     * @param  array $fields
+     * @return array
+     */
     private function getFillandSlug($fields)
     {
         // verification des champs modifiable
         foreach ($fields as $key => $value) {
-        // unset not fillable
+            // unset not fillable
             if (!in_array($key, $this->fillable)) {
                 unset($fields[$key]);
             }
@@ -442,12 +396,86 @@ class QueryBuilder
         return $this->fillable;
     }
 
-	/**
-	 * Permet de faire une requete MySql
-	 * @param  string $requestMySql Requete de type SQL
-	 */
-	 public function query($requestMySql)
-	 {
-		  return Config::GetDb()->db_query($requestMySql, $this->model);
-	 }
+    /**
+     * Permet de faire une requete MySql
+     * @param  string $requestMySql Requete de type SQL
+     */
+    public function query($requestMySql)
+    {
+        return Config::GetDb()->db_query($requestMySql, $this->model);
+    }
+
+    /**
+     * Permet d'ajouter une expression brute dans le select
+     */
+    public function selectRaw(string $expression): self
+    {
+        $this->fields[] = $expression;
+        return $this;
+    }
+
+    /**
+     * Ajout des conditions WHERE IN
+     */
+    public function whereIn(string $field, array $values): self
+    {
+        $escaped = array_map(fn($v) => "'" . addslashes($v) . "'", $values);
+        $this->conditions[] = "$field IN (" . implode(',', $escaped) . ")";
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter une condition WHERE NOT IN
+     */
+    public function whereNotIn(string $field, array $values): self
+    {
+        $escaped = array_map(fn($v) => "'" . addslashes($v) . "'", $values);
+        $this->conditions[] = "$field NOT IN (" . implode(',', $escaped) . ")";
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter une condition OR WHERE
+     */
+    public function orWhere(string $field, string $operand, string $value): self
+    {
+        $this->conditions[] = 'OR ' . $field . ' ' . $operand . " '" . addslashes($value) . "'";
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter une expression brute dans le group by
+     */
+    public function groupByRaw(string $expression): self
+    {
+        $this->groupBy[] = $expression;
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter une condition HAVING après un group by
+     */
+    public function having(string $field, string $operator, string $value): self
+    {
+        $this->having[] = "$field $operator '$value'";
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter une expression brute dans le having
+     */
+    public function havingRaw(string $expression): self
+    {
+        $this->having[] = $expression;
+        return $this;
+    }
+
+    /**
+     * Permet d'ajouter le mot clef DISTINCT dans la requete
+     */
+    public function distinct(): self
+    {
+        $this->distinct = true;
+        return $this;
+    }
 }
