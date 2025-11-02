@@ -8,19 +8,19 @@ use Core\Config;
 class QueryBuilder
 {
 
-    private array $having = [];
-    private ?string $model = null;
-    private array $fields = [];
+    private array $having     = [];
+    private ?string $model    = null;
+    private array $fields     = [];
     private array $conditions = [];
-    private ?string $table = null;
-    private array $joins = [];
-    private array $order = [];
-    private array $groupBy = [];
-    private array $fillable = [];
-    private array $slugs = [];
-    private ?int $limit = null;
-    private ?int $offset = null;
-    private bool $distinct = false;
+    private ?string $table    = null;
+    private array $joins      = [];
+    private array $order      = [];
+    private array $groupBy    = [];
+    private array $fillable   = [];
+    private array $slugs      = [];
+    private ?string $limit    = null;
+    private ?int $offset      = null;
+    private bool $distinct    = false;
 
 
     /**
@@ -266,7 +266,6 @@ class QueryBuilder
 
     /**
      * retourne le premier enregistrement trouvé
-     * @return $this
      */
     public function first()
     {
@@ -276,10 +275,8 @@ class QueryBuilder
 
     /**
      * LIMIT QUERY SQL
-     * @param  [type] $limit [description]
-     * @return instance
      */
-    public function limit($limit)
+    public function limit(string $limit)
     {
         $this->limit = $limit;
         return $this;
